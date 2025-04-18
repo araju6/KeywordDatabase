@@ -97,11 +97,11 @@ if __name__ == "__main__":
 
     results = searcher.get_webpage_contents(query)
 
-    print("\n\n=== MEANINGFUL INFORMATION EXTRACTED ===\n")
-    for i, (url, text) in enumerate(results):
-        print(f"\n--- Result {i + 1}: {url} ---")
-        print(text[:1500])
-        print("\n" + "-"*80)
+    # print("\n\n=== MEANINGFUL INFORMATION EXTRACTED ===\n")
+    # for i, (url, text) in enumerate(results):
+    #     print(f"\n--- Result {i + 1}: {url} ---")
+    #     print(text[:1500])
+    #     print("\n" + "-"*80)
 
     citations = searcher.extract_citation_blocks(results[0][1])
     print("\n=== Citations Found ===\n")
