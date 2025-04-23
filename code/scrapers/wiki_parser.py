@@ -78,32 +78,48 @@ class WikipediaParser:
 
         return refs
     
-    def extract_introduction(self, full_url):
+    def extract_sections(self, full_url):
         soup = self.extract_page_soup(full_url)
         if not soup:
-            return ""
+            return {}
 
         content = soup.select_one('div.mw-parser-output')
         if not content:
             print("Article body container not found.")
-            return ""
+            return {}
 
-        paras = []
-        node = content.find('p')
-        if not node:
-            print("No paragraphs found in intro.")
-            return ""
-
-        while node:
-            if node.name == 'h2':
-                break
-            if node.name == 'p':
-                text = " ".join(node.stripped_strings)
-                if text:
-                    paras.append(text)
-            node = node.find_next_sibling()
-
-        return "\n\n".join(paras)
+        sections = {}
+        intro_content = []
+        current_element = content.find('p')
+        while current_element and current_element.name == 'p':
+            text = " ".join(current_element.stripped_strings)
+            if text:
+                intro_content.append(text)
+            current_element = current_element.find_next_sibling()
+        
+        if intro_content:
+            sections["Introduction"] = "\n\n".join(intro_content)
+        headings = content.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+        
+        for i, heading in enumerate(headings):
+            heading_text = heading.get_text().strip()
+            section_content = []
+            element = heading.find_next()
+            while element:
+                if element.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
+                    break
+                    
+                if element.name == 'p':
+                    text = " ".join(element.stripped_strings)
+                    if text:
+                        section_content.append(text)
+                element = element.find_next()
+                if i < len(headings) - 1 and element == headings[i + 1]:
+                    break
+            if section_content:
+                sections[heading_text] = "\n\n".join(section_content)
+        
+        return sections
 
     def reference_fusion(self, intro_text, references):
         fused = intro_text.strip() + "\n\nReferences:\n"
@@ -114,14 +130,14 @@ class WikipediaParser:
                 fused += f"[{i}] {references[i]}\n"
                 count += 1
         if count == 0:
-            return intro_text  # no references were cited
+            return intro_text
         return fused.strip()
 
 
 if __name__ == "__main__":
     parser = WikipediaParser()
 
-    url = "https://en.wikipedia.org/wiki/Recurrent_neural_network"
+    url = "https://en.wikipedia.org/wiki/CRISPR"
     # print("\nINTRODUCTION:\n" + "-"*20)
     # intro = parser.extract_introduction(url)
     # print(intro + "...\n")  # just show first 500 chars
@@ -131,7 +147,21 @@ if __name__ == "__main__":
 
     # for r in references:
     #     print(f"[{r}] {references[r][:100]}...")
-    intro = parser.extract_introduction(url)
-    refs = parser.extract_references(url)
-    fused = parser.reference_fusion(intro, refs)
-    print(fused)
+    # intro = parser.extract_introduction(url)
+    # refs = parser.extract_references(url)
+    # fused = parser.reference_fusion(intro, refs)
+    # print(fused)
+    sections = parser.extract_sections(url)
+    
+    # Print all sections and their content
+    for header, content in sections.items():
+        print(f"\n{header}\n{'-'*len(header)}")
+        print(f"{content}...") 
+
+
+
+
+# add a function to get the keywords
+# an issue is finding the keywords
+# assume were given a list of the keywords
+# use the list as a starting point and also crawl new pages each time
