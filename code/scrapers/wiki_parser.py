@@ -37,45 +37,45 @@ class WikipediaParser:
             return []
 
         soup = BeautifulSoup(resp.text, 'html.parser')
-
-        container = (soup.select_one('div.reflist-columns')
-                     or soup.select_one('div.reflist')
-                     or soup.select_one('ol.references'))
-
-        if not container:
-            print("Could not find references container (div.reflist or ol.references).")
-            ol_blocks = soup.find_all('ol', class_='references')
-            if not ol_blocks:
-                 print("Could not find any <ol class='references'>.")
-                 return []
-            print("Warning: Found <ol class='references'> outside standard containers.")
-        else:
-             ol_blocks = container.select('ol.references')
-             if container.name == 'ol' and 'references' in container.get('class', []):
-                 ol_blocks = [container]
-             elif not ol_blocks:
-                 print(f"Found container '{container.name}.{'.'.join(container.get('class',[]))}', but no <ol class='references'> inside.")
-                 return []
-
+        
+        references_heading = None
+        for heading in soup.find_all(['h1', 'h2', 'h3']):
+            if heading.get_text().strip().lower() == 'references':
+                references_heading = heading
+                break
+        
+        if not references_heading:
+            print("Could not find References heading.")
+            return []
         refs = {}
         current_ref_number = 1
-
-        for ol in ol_blocks:
-            for li in ol.find_all('li', recursive=False):
-
-                backlink_span = li.find('span', class_='mw-cite-backlink')
-                if backlink_span:
-                    backlink_span.decompose()
-
-                text = " ".join(li.stripped_strings)
-
-                if text.startswith('^ '):
-                    text = text[2:].strip()
-                text = re.sub(r'^(\^\s*([a-z]\s+)*)+', '', text).strip()
-
-                refs[current_ref_number] = text
-                current_ref_number += 1
-
+        all_containers = soup.find_all(['div', 'ol'], class_=['reflist-columns', 'reflist', 'references'])
+        valid_containers = [c for c in all_containers if c.sourceline > references_heading.sourceline]
+        
+        if not valid_containers:
+            print("No reference containers found after References heading.")
+            return []
+        for container in valid_containers:
+            if container.name == 'ol' and 'references' in container.get('class', []):
+                ol_blocks = [container]
+            else:
+                ol_blocks = container.select('ol.references')
+            
+            for ol in ol_blocks:
+                for li in ol.find_all('li', recursive=False):
+                    backlink_span = li.find('span', class_='mw-cite-backlink')
+                    if backlink_span:
+                        backlink_span.decompose()
+                    
+                    text = " ".join(li.stripped_strings)
+                    
+                    if text.startswith('^ '):
+                        text = text[2:].strip()
+                    text = re.sub(r'^(\^\s*([a-z]\s+)*)+', '', text).strip()
+                    
+                    refs[current_ref_number] = text
+                    current_ref_number += 1
+        
         return refs
     
     def extract_sections(self, full_url):
@@ -89,60 +89,92 @@ class WikipediaParser:
             return {}
 
         sections = {}
-        intro_content = []
-        current_element = content.find('p')
-        while current_element and current_element.name == 'p':
-            text = " ".join(current_element.stripped_strings)
-            if text:
-                intro_content.append(text)
-            current_element = current_element.find_next_sibling()
-        
-        if intro_content:
-            sections["Introduction"] = "\n\n".join(intro_content)
         headings = content.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+        all_paragraphs = content.find_all('p', recursive=True)
+        all_paragraphs = [p for p in all_paragraphs if p.text.strip()]
+        heading_hierarchy = {}
+        current_parent = {1: None, 2: None, 3: None, 4: None, 5: None, 6: None}
+        for h in headings:
+            level = int(h.name[1])
+            heading_text = h.get_text().strip()
+            current_parent[level] = heading_text
+            for l in range(level + 1, 7):
+                current_parent[l] = None
+            if level == 2:
+                heading_hierarchy[h] = heading_text
+            else:
+                parent_level = level - 1
+                while parent_level >= 2 and current_parent[parent_level] is None:
+                    parent_level -= 1
+                
+                if parent_level >= 2:
+                    heading_hierarchy[h] = f"{current_parent[parent_level]} - {heading_text}"
+                else:
+                    heading_hierarchy[h] = heading_text
+        first_heading_idx = float('inf')
+        if headings:
+            for i, p in enumerate(all_paragraphs):
+                if p.sourceline > headings[0].sourceline:
+                    first_heading_idx = i
+                    break
         
+        intro_paragraphs = all_paragraphs[:first_heading_idx] if first_heading_idx < float('inf') else all_paragraphs
+        if intro_paragraphs:
+            sections["Introduction"] = "\n\n".join(" ".join(p.stripped_strings) for p in intro_paragraphs)
         for i, heading in enumerate(headings):
-            heading_text = heading.get_text().strip()
-            section_content = []
-            element = heading.find_next()
-            while element:
-                if element.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
+            hierarchical_heading = heading_hierarchy.get(heading, heading.get_text().strip())
+            start_idx = None
+            end_idx = None
+            
+            for j, p in enumerate(all_paragraphs):
+                if p.sourceline > heading.sourceline and start_idx is None:
+                    start_idx = j
+                
+                if i < len(headings) - 1 and p.sourceline > headings[i+1].sourceline:
+                    end_idx = j
                     break
-                    
-                if element.name == 'p':
-                    text = " ".join(element.stripped_strings)
-                    if text:
-                        section_content.append(text)
-                element = element.find_next()
-                if i < len(headings) - 1 and element == headings[i + 1]:
-                    break
-            if section_content:
-                sections[heading_text] = "\n\n".join(section_content)
+            
+            if start_idx is not None and end_idx is None:
+                end_idx = len(all_paragraphs)
+            
+            if start_idx is not None and end_idx is not None and start_idx < end_idx:
+                section_paragraphs = all_paragraphs[start_idx:end_idx]
+                if section_paragraphs:
+                    sections[hierarchical_heading] = "\n\n".join(" ".join(p.stripped_strings) for p in section_paragraphs)
         
         return sections
 
-    def reference_fusion(self, intro_text, references):
-        fused = intro_text.strip() + "\n\nReferences:\n"
-        count = 0
-        for i in range(1, len(references) + 1):
-            pattern = f" [ {i} ] "
-            if pattern in intro_text:
-                fused += f"[{i}] {references[i]}\n"
-                count += 1
-        if count == 0:
-            return intro_text
-        return fused.strip()
+    def reference_fusion(self, sections, references):
+        updated_sections = {}
+        ref_used = set()
+        for section_title, content in sections.items():
+            section_refs = {}
+            
+            for i in range(1, len(references) + 1):
+                pattern = f"\\[ {i} \\]"
+                if re.search(pattern, content):
+                    section_refs[i] = references.get(i, "Reference not found")
+                    ref_used.add(i)
+            if section_refs:
+                fused_content = content.strip() + "\n\nReferences:\n"
+                for ref_num in sorted(section_refs.keys()):
+                    fused_content += f"[{ref_num}] {section_refs[ref_num]}\n"
+                updated_sections[section_title] = fused_content.strip()
+            else:
+                updated_sections[section_title] = content
+        
+        return updated_sections
 
 
 if __name__ == "__main__":
     parser = WikipediaParser()
 
-    url = "https://en.wikipedia.org/wiki/CRISPR"
+    url = "https://en.wikipedia.org/wiki/convolutional_neural_network"
     # print("\nINTRODUCTION:\n" + "-"*20)
     # intro = parser.extract_introduction(url)
     # print(intro + "...\n")  # just show first 500 chars
     # print("-" * 20)
-    # references = parser.extract_references(target_url)
+    references = parser.extract_references(url)
     # print("-" * 20)
 
     # for r in references:
@@ -152,11 +184,14 @@ if __name__ == "__main__":
     # fused = parser.reference_fusion(intro, refs)
     # print(fused)
     sections = parser.extract_sections(url)
+    fused = parser.reference_fusion(sections, references)
     
     # Print all sections and their content
-    for header, content in sections.items():
+    for header, content in fused.items():
         print(f"\n{header}\n{'-'*len(header)}")
-        print(f"{content}...") 
+        print(content) 
+
+    # print(references)
 
 
 
