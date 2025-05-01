@@ -169,7 +169,7 @@ class WikipediaParser:
 if __name__ == "__main__":
     parser = WikipediaParser()
 
-    url = "https://en.wikipedia.org/wiki/convolutional_neural_network"
+    url = "https://en.wikipedia.org/wiki/recurrent_neural_network"
     # print("\nINTRODUCTION:\n" + "-"*20)
     # intro = parser.extract_introduction(url)
     # print(intro + "...\n")  # just show first 500 chars
@@ -185,11 +185,12 @@ if __name__ == "__main__":
     # print(fused)
     sections = parser.extract_sections(url)
     fused = parser.reference_fusion(sections, references)
+    print(fused.values())
     
     # Print all sections and their content
-    for header, content in fused.items():
-        print(f"\n{header}\n{'-'*len(header)}")
-        print(content) 
+    # for header, content in fused.items():
+    #     print(f"\n{header}\n{'-'*len(header)}")
+    #     print(content) 
 
     # print(references)
 
