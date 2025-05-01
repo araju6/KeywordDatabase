@@ -10,7 +10,6 @@ class WikipediaParser:
         })
 
     def extract_page_soup(self, full_url):
-        """Fetches URL and returns a parsed BeautifulSoup object, or None on error."""
         try:
             print(f"Fetching URL: {full_url}")
             resp = self.session.get(full_url)
@@ -92,25 +91,29 @@ class WikipediaParser:
         headings = content.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
         all_paragraphs = content.find_all('p', recursive=True)
         all_paragraphs = [p for p in all_paragraphs if p.text.strip()]
-        heading_hierarchy = {}
-        current_parent = {1: None, 2: None, 3: None, 4: None, 5: None, 6: None}
+        
+        current_path = {1: None, 2: None, 3: None, 4: None, 5: None, 6: None}
+        heading_full_paths = {}
+        
         for h in headings:
             level = int(h.name[1])
             heading_text = h.get_text().strip()
-            current_parent[level] = heading_text
+            current_path[level] = heading_text
+            
             for l in range(level + 1, 7):
-                current_parent[l] = None
+                current_path[l] = None
+            
             if level == 2:
-                heading_hierarchy[h] = heading_text
+                heading_full_paths[h] = heading_text
             else:
-                parent_level = level - 1
-                while parent_level >= 2 and current_parent[parent_level] is None:
-                    parent_level -= 1
+                path_parts = []
+                for l in range(2, level):
+                    if current_path[l] is not None:
+                        path_parts.append(current_path[l])
                 
-                if parent_level >= 2:
-                    heading_hierarchy[h] = f"{current_parent[parent_level]} - {heading_text}"
-                else:
-                    heading_hierarchy[h] = heading_text
+                path_parts.append(heading_text)
+                heading_full_paths[h] = " - ".join(path_parts)
+        
         first_heading_idx = float('inf')
         if headings:
             for i, p in enumerate(all_paragraphs):
@@ -121,8 +124,9 @@ class WikipediaParser:
         intro_paragraphs = all_paragraphs[:first_heading_idx] if first_heading_idx < float('inf') else all_paragraphs
         if intro_paragraphs:
             sections["Introduction"] = "\n\n".join(" ".join(p.stripped_strings) for p in intro_paragraphs)
+        
         for i, heading in enumerate(headings):
-            hierarchical_heading = heading_hierarchy.get(heading, heading.get_text().strip())
+            full_path_heading = heading_full_paths.get(heading, heading.get_text().strip())
             start_idx = None
             end_idx = None
             
@@ -140,7 +144,7 @@ class WikipediaParser:
             if start_idx is not None and end_idx is not None and start_idx < end_idx:
                 section_paragraphs = all_paragraphs[start_idx:end_idx]
                 if section_paragraphs:
-                    sections[hierarchical_heading] = "\n\n".join(" ".join(p.stripped_strings) for p in section_paragraphs)
+                    sections[full_path_heading] = "\n\n".join(" ".join(p.stripped_strings) for p in section_paragraphs)
         
         return sections
 
@@ -165,39 +169,86 @@ class WikipediaParser:
         
         return updated_sections
 
+    def extract_keywords(self, text, existing_keywords=None):
+        if existing_keywords is None:
+            existing_keywords = set()
+        else:
+            existing_keywords = set(existing_keywords)
+            
+        potential_keywords = set(re.findall(r'(?:[A-Z][a-z]+ ){1,3}[A-Z][a-z]+', text))
+        
+        technical_terms = set(re.findall(r'\b(?:[a-z]+-[a-z]+|[a-z]+)\b', text.lower()))
+        
+        term_counts = {}
+        for term in technical_terms:
+            if len(term) > 4:
+                term_counts[term] = text.lower().count(term)
+        
+        frequent_terms = {term for term, count in term_counts.items() if count > 2}
+        
+        all_keywords = existing_keywords.union(potential_keywords).union(frequent_terms)
+        
+        return list(all_keywords)
+    
+    def crawl_related_pages(self, base_url, depth=1, max_pages=5, keywords=None):
+        if keywords is None:
+            keywords = []
+            
+        visited = set()
+        to_visit = [(base_url, 0)]
+        results = {}
+        
+        while to_visit and len(visited) < max_pages:
+            current_url, current_depth = to_visit.pop(0)
+            
+            if current_url in visited or current_depth > depth:
+                continue
+                
+            print(f"Crawling: {current_url} (depth {current_depth})")
+            visited.add(current_url)
+            
+            sections = self.extract_sections(current_url)
+            references = self.extract_references(current_url)
+            fused_content = self.reference_fusion(sections, references)
+            
+            results[current_url] = {
+                'sections': fused_content,
+                'depth': current_depth
+            }
+            
+            all_content = " ".join(sections.values())
+            keywords = self.extract_keywords(all_content, keywords)
+            
+            if current_depth < depth:
+                soup = self.extract_page_soup(current_url)
+                if soup:
+                    content_div = soup.select_one('div.mw-parser-output')
+                    if content_div:
+                        links = content_div.find_all('a', href=True)
+                        for link in links:
+                            href = link.get('href', '')
+                            if href.startswith('/wiki/') and ':' not in href:
+                                full_url = f"https://en.wikipedia.org{href}"
+                                if full_url not in visited:
+                                    to_visit.append((full_url, current_depth + 1))
+        
+        return results, keywords
+
 
 if __name__ == "__main__":
     parser = WikipediaParser()
 
-    url = "https://en.wikipedia.org/wiki/recurrent_neural_network"
-    # print("\nINTRODUCTION:\n" + "-"*20)
-    # intro = parser.extract_introduction(url)
-    # print(intro + "...\n")  # just show first 500 chars
-    # print("-" * 20)
+    url = "https://en.wikipedia.org/wiki/Convolutional_neural_network"
     references = parser.extract_references(url)
-    # print("-" * 20)
-
-    # for r in references:
-    #     print(f"[{r}] {references[r][:100]}...")
-    # intro = parser.extract_introduction(url)
-    # refs = parser.extract_references(url)
-    # fused = parser.reference_fusion(intro, refs)
-    # print(fused)
     sections = parser.extract_sections(url)
     fused = parser.reference_fusion(sections, references)
-    print(fused.values())
     
-    # Print all sections and their content
-    # for header, content in fused.items():
-    #     print(f"\n{header}\n{'-'*len(header)}")
-    #     print(content) 
-
-    # print(references)
-
-
-
-
-# add a function to get the keywords
-# an issue is finding the keywords
-# assume were given a list of the keywords
-# use the list as a starting point and also crawl new pages each time
+    for header, content in fused.items():
+        print(f"\n{header}\n{'-'*len(header)}")
+        print(content)
+    
+    # Uncomment to use the new crawling functionality
+    # results, keywords = parser.crawl_related_pages(url, depth=1, max_pages=3)
+    # print("\nExtracted Keywords:")
+    # for keyword in keywords[:20]:  # Show first 20 keywords
+    #    print(f"- {keyword}")
