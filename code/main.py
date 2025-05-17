@@ -1,8 +1,8 @@
 from scrapers.wiki_parser import WikipediaParser
 from gemini import GeminiKeywordPaperExtractor
 
-keyword = "Convolutional Neural Network"
-wiki_url = "https://en.wikipedia.org/wiki/Convolutional_neural_network"
+keyword = "Recurrent Neural Network"
+wiki_url = "https://en.wikipedia.org/wiki/Recurrent_neural_network"
 
 wiki_parser = WikipediaParser()
 sections = wiki_parser.extract_sections(wiki_url)
@@ -40,3 +40,8 @@ print("\n== All Unique New Keywords ==")
 for kw in sorted(keyword_set):
     print(f"- {kw}")
 
+
+
+#test the model accuracy and precision
+# after that build  a grader to grade each citqation accuracy
+    # make a report document

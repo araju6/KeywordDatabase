@@ -238,7 +238,7 @@ class WikipediaParser:
 if __name__ == "__main__":
     parser = WikipediaParser()
 
-    url = "https://en.wikipedia.org/wiki/Convolutional_neural_network"
+    url = "https://en.wikipedia.org/wiki/Recurrent_neural_network"
     references = parser.extract_references(url)
     sections = parser.extract_sections(url)
     fused = parser.reference_fusion(sections, references)
