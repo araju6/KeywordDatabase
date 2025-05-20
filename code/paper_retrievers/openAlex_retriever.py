@@ -24,12 +24,10 @@ class OpenAlexRetriever:
             response = requests.get(url, headers=headers, timeout=10)
             soup = BeautifulSoup(response.text, 'html.parser')
 
-            # Handles Springer format (like in your screenshot)
             abstract_div = soup.find('div', {'id': 'Abs1-content'})
             if abstract_div:
                 return abstract_div.get_text(separator=" ", strip=True)
 
-            # Add more scraping logic for other publishers if needed
             return None
         except Exception as e:
             print(f"Error scraping abstract: {e}")
@@ -45,7 +43,6 @@ class OpenAlexRetriever:
             landing_page = first_result.get('primary_location', {}).get('landing_page_url', None)
             abstract = self.convert_inverted_index_to_text(first_result.get('abstract_inverted_index', None))
 
-            # Fall back to scraping
             if not abstract and landing_page:
                 abstract = self.scrape_abstract_from_webpage(landing_page)
             

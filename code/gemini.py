@@ -21,8 +21,8 @@ Given the following Wikipedia section titled "{section_title}", do the following
 
 Return your answer in this format:
 
-Foundational Papers:
-- <Paper title or topic> by <Author(s)> (<Year>) – <Short explanation>
+Foundational Papers (Ensure you extract the exact title of each paper and put it in quotations marks):
+- <Paper title or topic> by <Author(s)> (<Year>) – <Explanation of why it was chosen>
 
 New Keywords:
 - <keyword1>
