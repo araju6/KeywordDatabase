@@ -32,14 +32,31 @@ for section_title, section_text in target_sections.items():
             keyword_set.add(kw)
 
 
+# print("== All Foundational Papers ==")
+# out = []
+# for section, papers in paper_list:
+#     # print(f"\n-- {section} --\n{papers}")
+#     print(papers)
+#     print(type(papers))
+
+#     # out += papers
+
+all_papers = []
+
 print("== All Foundational Papers ==")
 for section, papers in paper_list:
-    print(f"\n-- {section} --\n{papers}")
+    # print(papers)  # You can remove this if you don’t want to print
+    # Split by lines to extract individual paper titles
+    for line in papers.split("\n"):
+        line = line.strip("-• ").strip()
+        if line != "XXX":
+            all_papers.append(line)
 
-print("\n== All Unique New Keywords ==")
-for kw in sorted(keyword_set):
-    print(f"- {kw}")
-
+print(all_papers)
+# print("\n== All Unique New Keywords ==")
+# for kw in sorted(keyword_set):
+#     print(f"- {kw}")
+# print(papers)
 
 
 #test the model accuracy and precision
