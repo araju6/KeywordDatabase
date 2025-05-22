@@ -35,7 +35,7 @@ class Paper_Verifier:
             Remember that for certain topics it may be unlikely that a single paper
             can be attributed with the credit, so in such cases adjust your scores higher accordingly.
             
-            Return only a number between 1 and 9 (inclusive) followed by a || and then provide a short 1 sentence on how you think the query should be adjusted
+            Return only a number between 0 and 9 (inclusive) followed by a || and then provide a short 1 sentence on how you think the query should be adjusted
             to better retrieve the desired results. For the suggestion simply output the new query and no additional text.
             """
             response = self.client.chat.completions.create(

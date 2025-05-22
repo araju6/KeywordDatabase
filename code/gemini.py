@@ -16,12 +16,12 @@ class GeminiKeywordPaperExtractor:
 You are aiding in building a database of keywords and the foundational research papers that invented them.
 Given the following Wikipedia section titled "{section_title}", do the following:
 
-1. Identify the foundational academic papers that are associated with the primary development/invention of {keyword}. Only list old and foundational papers that INVENTED the concept. Be EXTREMELY picky and only select papers if they were very very direcly influential. If you don't find any simply use the placeholder XXX.
+1. Identify the foundational academic papers that are associated with the primary development/invention of {keyword}. Only list old and foundational papers that INVENTED the concept. Be EXTREMELY picky and only select papers if they were very very direcly influential. Ensure you only cite papers that are in the citations. If you don't find any simply use the placeholder XXX.
 2. List any other important technical or conceptual keywords found in the text that are related to the topic and may be worth tracking in a research database. These should be tangible concepts be quite picky with this as well.
 
 Return your answer in this format:
 
-Foundational Papers (Ensure you extract the exact title of each paper and put it in quotations marks):
+Foundational Papers:
 - <Paper title or topic> by <Author(s)> (<Year>) – <Explanation of why it was chosen>
 
 New Keywords:
