@@ -37,7 +37,7 @@ for section, papers in paper_list:
     print(f"\n-- {section} --\n{papers}")
 
 
-# all_papers = []
+all_papers = []
 
 # print("== All Foundational Papers ==")
 # for section, papers in paper_list:
@@ -55,6 +55,6 @@ for section, papers in paper_list:
 # print(papers)
 
 
-#test the model accuracy and precision
-# after that build  a grader to grade each citqation accuracy
-    # make a report document
+#Build system to extract claims
+#then pick claims that are relevant
+# then look for citations in those claims and if not we have to look for related citations else where in the text.
