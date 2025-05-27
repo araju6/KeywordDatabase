@@ -22,7 +22,7 @@ Given the following Wikipedia section titled "{section_title}", do the following
 Return your answer in this format:
 
 Foundational Claims:
-- Sentence/Sentences deemed important (extract directly from the content. When possible try to expand claims such that they contain a reference) – <Explanation of why it was chosen>
+- Sentence/Sentences deemed important (extract directly from the content. When possible try to expand claims such that they contain a reference) – *Explanation of why it was chosen* - <list of papers in claim - ["Name of the paper if identifiable by reference else name as mentioned in the claim" :-: <Author(s)> (<Year>)]>. If any information is unavailable in the claim use XXX as a placeholder.
 
 New Keywords:
 - <keyword1>
