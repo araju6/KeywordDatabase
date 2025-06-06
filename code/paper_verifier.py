@@ -33,7 +33,7 @@ class Paper_Verifier:
             Based solely on this information, rate this paper's relevance to the query on a scale from 0 to 9 (inclusive),
             where 1 means completely irrelevant and 9 means perfectly relevant. If a paper is lacking certain information, assess it using what is provided and what you know about the paper.
             Remember that for certain topics it may be unlikely that a single paper
-            can be attributed with the credit, so in such cases adjust your scores higher accordingly.
+            can be attributed with the credit, so in such cases adjust your scores higher accordingly. Grade VERY harshly. Only give high scores to papers that you think are truly relevant.
             
             Return only a number between 0 and 9 (inclusive). Give a 0 for papers with any missing fields.
             """

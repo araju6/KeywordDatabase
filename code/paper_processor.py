@@ -24,7 +24,6 @@ class PaperProcessor:
         self.verifier = Paper_Verifier()
         self.database = KeywordDatabase()
         self.wiki_parser = WikipediaParser()
-        self.timeout_seconds = 30  # Timeout for Gemini API calls
         self.max_recursion_depth = max_recursion_depth
         self.processed_keywords = set()  # Track processed keywords to avoid cycles
         self.non_identified_sources = []
