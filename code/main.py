@@ -1,7 +1,7 @@
 from paper_processor import PaperProcessor
 
 # Initialize processor
-processor = PaperProcessor(1)
+processor = PaperProcessor(2)
 
 # Start with a root keyword
 root_keyword = "Recurrent Neural Network"

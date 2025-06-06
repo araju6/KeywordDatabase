@@ -27,6 +27,7 @@ class PaperProcessor:
         self.timeout_seconds = 30  # Timeout for Gemini API calls
         self.max_recursion_depth = max_recursion_depth
         self.processed_keywords = set()  # Track processed keywords to avoid cycles
+        self.non_identified_sources = []
 
     def extract_key_term(self, section: str, claim: str) -> str:
         """
@@ -57,7 +58,7 @@ class PaperProcessor:
             Input: "The vanishing gradient problem affects training"
             Output: vanishing gradient
 
-            If there is an XXX, do not pick that and find the next best.
+            If there is nothing suitable say XXX
             
             Now extract the key term from the claim above:"""
             
@@ -111,6 +112,11 @@ class PaperProcessor:
             print(f"\nSkipping {keyword} - max depth reached")
             return
             
+        # If depth is 0, we're done before processing any papers
+        if current_depth == 0:
+            print("\nDepth is 0, skipping all paper processing")
+            return
+            
         # Add to processed sets
         self.processed_keywords.add(keyword)
         processed_chain.add(keyword)
@@ -135,9 +141,7 @@ class PaperProcessor:
         print("\nStep 2: Extracting target sections")
         target_sections = {}
         for title, content in sections.items():
-            # if title.lower() == "introduction":
             if title.lower() == "introduction" or "history" in title.lower():
-
                 target_sections[title] = content
         print(f"Found {len(target_sections)} target sections")
         
@@ -173,8 +177,10 @@ class PaperProcessor:
         # Process papers
         print("\nStep 4: Organizing papers into identified and non-identified sources")
         identified_sources, non_identified_sources = self.organizer.organize_papers(paper_list)
+        # Remove duplicates from non_identified_sources
+        non_identified_sources = list(dict.fromkeys(non_identified_sources))
         print(f"Identified sources: {len(identified_sources)}")
-        print(f"Non-identified sources: {[a[0] for a in self.title_extractor.extract_titles(non_identified_sources)]} XXXXXXXXXXXXXXXXXXXX")
+        print(f"Non-identified sources: {[a[0] for a in self.title_extractor.extract_titles(non_identified_sources)]} ")
         
         # Extract clean titles from identified sources
         print("\nStep 5: Extracting clean titles from identified sources")
@@ -221,20 +227,17 @@ class PaperProcessor:
             else:
                 print("No paper info found in OpenAlex")
         
-        # If depth is 0, we're done after processing identified sources
-        if current_depth == 0:
-            print("\nDepth is 0, skipping non-identified sources processing")
-            return
-        
-        # Process non-identified sources
-        print("\nStep 7: Processing non-identified sources")
-        for claim in non_identified_sources:
-            print(f"\nProcessing non-identified claim: {claim[:100]}...")
-            key_term = self.extract_key_term("", claim)  # No section title needed
-            if key_term and key_term not in processed_chain:  # Prevent cycles in key term extraction
-                print(f"Will explore: {key_term}")
-                self.database.add_to_process(key_term)
-                # Process key term with reduced depth, passing this keyword as parent and the current chain
-                self.process_keyword(key_term, current_depth - 1, keyword, processed_chain.copy())
-            else:
-                print(f"Skipping {key_term} - already in current chain") 
+        # Only process non-identified sources if depth > 0
+        if current_depth > 0:
+            # Process non-identified sources
+            print("\nStep 7: Processing non-identified sources")
+            for claim in non_identified_sources:
+                print(f"\nProcessing non-identified claim: {claim[:100]}...")
+                key_term = self.extract_key_term("", claim)  # No section title needed
+                if key_term and key_term not in processed_chain:  # Prevent cycles in key term extraction
+                    print(f"Will explore: {key_term}")
+                    self.database.add_to_process(key_term)
+                    # Process key term with reduced depth, passing this keyword as parent and the current chain
+                    self.process_keyword(key_term, current_depth - 1, keyword, processed_chain.copy())
+                else:
+                    print(f"Skipping {key_term} - already in current chain") 
