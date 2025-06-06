@@ -89,6 +89,34 @@ class GoogleSearcher:
 
         return citation_blocks
 
+    def find_wikipedia_page(self, keyword: str) -> str:
+        """
+        Find the Wikipedia page URL for a given keyword using Google search.
+        
+        Args:
+            keyword: The keyword to search for
+            
+        Returns:
+            The Wikipedia page URL if found, None otherwise
+        """
+        query = f"{keyword} site:wikipedia.org"
+        try:
+            print(f"Searching for Wikipedia page with query: {query}")
+            results = self.search_query(query, max_results=1)
+            print(f"Search results: {results}")
+            if results and len(results) > 0:
+                url = results[0]
+                print(f"First result URL: {url}")
+                # Verify it's a Wikipedia page
+                if "wikipedia.org/wiki/" in url:
+                    print(f"URL verified as Wikipedia page")
+                    return url
+                else:
+                    print(f"URL does not contain 'wikipedia.org/wiki/'")
+        except Exception as e:
+            print(f"Error finding Wikipedia page: {e}")
+        return None
+
 
 if __name__ == "__main__":
     searcher = GoogleSearcher()

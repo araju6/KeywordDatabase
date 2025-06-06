@@ -4,6 +4,7 @@ from paper_retrievers.openAlex_retriever import OpenAlexRetriever
 from paper_verifier import Paper_Verifier
 from keyword_database import KeywordDatabase
 from scrapers.wiki_parser import WikipediaParser
+from scrapers.google_search import GoogleSearcher
 from title_extractor import TitleExtractor
 import time
 
@@ -24,6 +25,7 @@ class PaperProcessor:
         self.verifier = Paper_Verifier()
         self.database = KeywordDatabase()
         self.wiki_parser = WikipediaParser()
+        self.google_searcher = GoogleSearcher()
         self.max_recursion_depth = max_recursion_depth
         self.processed_keywords = set()  # Track processed keywords to avoid cycles
         self.non_identified_sources = []
@@ -46,18 +48,33 @@ class PaperProcessor:
         try:
             # Ask Gemini to extract the key term
             prompt = f"""Given this claim from the {section} section: "{claim}"
-            Extract the single most important key term that should be researched to verify this claim.
-            Return ONLY the term itself, with no additional text, no explanations, no formatting.
-            Do not say "the term is" or "here is" or any other phrases.
-            Just return the term itself.
-            For example:
+            Extract the single most important technical term or concept that should be researched to verify this claim.
+            
+            Rules:
+            1. The term MUST be a technical concept, algorithm, model, or research area in computer science/ML
+            2. DO NOT return common English words or non-technical terms
+            3. The term should be specific enough to be researchable
+            4. If the term is part of a paper title, extract the technical concept instead
+            5. Return ONLY the term itself, with no additional text
+            6. If no suitable technical term exists, return XXX
+            7. DO NOT return authors or years only paper concepts.
+            8. The term can be multiple words if it's a complete technical concept
+            
+            Examples:
             Input: "The LSTM architecture was revolutionary"
             Output: LSTM
             
             Input: "The vanishing gradient problem affects training"
             Output: vanishing gradient
-
-            If there is nothing suitable say XXX
+            
+            Input: "This was a major breakthrough in the field"
+            Output: XXX
+            
+            Input: "The paper introduced a new approach"
+            Output: XXX
+            
+            Input: "Bidirectional recurrent neural networks were developed to process sequences in both directions"
+            Output: Bidirectional recurrent neural networks
             
             Now extract the key term from the claim above:"""
             
@@ -67,8 +84,8 @@ class PaperProcessor:
             if result:
                 # Clean up the result to get just the term
                 term = result.strip().strip('"').strip("'").strip()
-                # Skip if term is just XXX
-                if term == "XXX":
+                # Skip if term is just XXX or a common word
+                if term == "XXX" or term.lower() in {'the', 'and', 'or', 'but', 'only', 'just', 'very', 'much', 'many', 'few', 'some', 'all', 'none'}:
                     return None
                 # Remove any formatting or extra text
                 if ":" in term:
@@ -130,7 +147,11 @@ class PaperProcessor:
         
         # Get Wikipedia content
         print(f"\nStep 1: Fetching Wikipedia content for {keyword}")
-        wiki_url = f"https://en.wikipedia.org/wiki/{keyword.replace(' ', '_')}"
+        wiki_url = self.google_searcher.find_wikipedia_page(keyword)
+        if not wiki_url:
+            print(f"Could not find Wikipedia page for {keyword}, skipping...")
+            return
+            
         sections = self.wiki_parser.extract_sections(wiki_url)
         references = self.wiki_parser.extract_references(wiki_url)
         sections = self.wiki_parser.reference_fusion(sections, references)
@@ -177,9 +198,9 @@ class PaperProcessor:
         print("\nStep 4: Organizing papers into identified and non-identified sources")
         identified_sources, non_identified_sources = self.organizer.organize_papers(paper_list)
         # Remove duplicates from non_identified_sources
-        non_identified_sources = list(dict.fromkeys(non_identified_sources))
+        non_identified_sources = [a[0] for a in self.title_extractor.extract_titles(non_identified_sources)]
         print(f"Identified sources: {len(identified_sources)}")
-        print(f"Non-identified sources: {[a[0] for a in self.title_extractor.extract_titles(non_identified_sources)]} ")
+        print(f"Non-identified sources: {non_identified_sources} ")
         
         # Extract clean titles from identified sources
         print("\nStep 5: Extracting clean titles from identified sources")
