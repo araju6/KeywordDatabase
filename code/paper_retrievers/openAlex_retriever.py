@@ -53,8 +53,3 @@ class OpenAlexRetriever:
                 'title': first_result.get('title', 'No Title Found')
             }
         return {"url": None, "abstract": None, "citations": None, "title": None}
-    
-    
-retriever = OpenAlexRetriever()
-paper_info = retriever.search_paper("Learning representations by back-propagating errors")
-print(paper_info)

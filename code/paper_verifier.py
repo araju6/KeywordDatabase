@@ -30,13 +30,12 @@ class Paper_Verifier:
             Title: {title}
             Reasoning: {reasoning}
             
-            Based solely on this information, rate this paper's relevance to the query on a scale from 1 to 9 (inclusive),
-            where 1 means completely irrelevant and 10 means perfectly relevant. If a paper is lacking certain information, assess it using what is provided and what you know about the paper. If the abstract is missing try to recall the abstract on your own.
+            Based solely on this information, rate this paper's relevance to the query on a scale from 0 to 9 (inclusive),
+            where 1 means completely irrelevant and 9 means perfectly relevant. If a paper is lacking certain information, assess it using what is provided and what you know about the paper.
             Remember that for certain topics it may be unlikely that a single paper
             can be attributed with the credit, so in such cases adjust your scores higher accordingly.
             
-            Return only a number between 0 and 9 (inclusive) followed by a || and then provide a short 1 sentence on how you think the query should be adjusted
-            to better retrieve the desired results. For the suggestion simply output the new query and no additional text.
+            Return only a number between 0 and 9 (inclusive). Give a 0 for papers with any missing fields.
             """
             response = self.client.chat.completions.create(
                 messages=[

@@ -232,7 +232,7 @@ class WikipediaParser:
                                 if full_url not in visited:
                                     to_visit.append((full_url, current_depth + 1))
         
-        return results, keywords
+        return results[:10], keywords
 
 
 if __name__ == "__main__":
