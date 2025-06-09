@@ -2,12 +2,12 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-class WikipediaAPIHybridParser:
+class WikipediaParser:
     API_ENDPOINT = "https://en.wikipedia.org/w/api.php"
     def __init__(self, user_agent=None):
         self.session = requests.Session()
         self.session.headers.update({
-            'User-Agent': user_agent or 'WikipediaAPIHybridParser/1.0'
+            'User-Agent': user_agent or 'WikipediaParser/1.0'
         })
 
     def _call_api(self, params):
@@ -18,7 +18,27 @@ class WikipediaAPIHybridParser:
     def extract_sections(self, page_title):
         """Fetch sections via MediaWiki API and return dict of heading -> plain-text body."""
         sections = {}
-        # Get list of sections
+
+        # Fetch the lead (introduction) section
+        try:
+            lead_data = self._call_api({
+                'action': 'parse',
+                'page': page_title,
+                'prop': 'text',
+                'section': 0
+            })
+            html = lead_data['parse']['text']['*']
+            soup = BeautifulSoup(html, 'html.parser')
+            paras = [
+                p.get_text(' ', strip=True)
+                for p in soup.find_all('p')
+                if p.get_text(strip=True)
+            ]
+            sections["Introduction"] = "\n\n".join(paras)
+        except Exception as e:
+            print(f"Failed to fetch intro section: {e}")
+
+        # Get list of other sections
         data = self._call_api({
             'action': 'parse',
             'page': page_title,
@@ -27,22 +47,25 @@ class WikipediaAPIHybridParser:
         for sec in data['parse'].get('sections', []):
             idx = sec['index']
             title = sec['line']
-            # Fetch section HTML
-            sec_data = self._call_api({
-                'action': 'parse',
-                'page': page_title,
-                'prop': 'text',
-                'section': idx
-            })
-            html = sec_data['parse']['text']['*']
-            soup = BeautifulSoup(html, 'html.parser')
-            paras = [
-                p.get_text(' ', strip=True)
-                for p in soup.find_all('p')
-                if p.get_text(strip=True)
-            ]
-            sections[title] = "\n\n".join(paras)
+            try:
+                sec_data = self._call_api({
+                    'action': 'parse',
+                    'page': page_title,
+                    'prop': 'text',
+                    'section': idx
+                })
+                html = sec_data['parse']['text']['*']
+                soup = BeautifulSoup(html, 'html.parser')
+                paras = [
+                    p.get_text(' ', strip=True)
+                    for p in soup.find_all('p')
+                    if p.get_text(strip=True)
+                ]
+                sections[title] = "\n\n".join(paras)
+            except Exception as e:
+                print(f"Failed to fetch section {title}: {e}")
         return sections
+
 
     def extract_page_soup(self, full_url):
         try:
@@ -138,8 +161,8 @@ class WikipediaAPIHybridParser:
 
 
 if __name__ == '__main__':
-    parser = WikipediaAPIHybridParser()
-    page_title = 'recurrent_neural_network'
+    parser = WikipediaParser()
+    page_title = 'diffusion_model'
     url = f'https://en.wikipedia.org/wiki/{page_title}'
 
     # Extract body sections via API

@@ -7,7 +7,7 @@ from scrapers.wiki_parser import WikipediaParser
 from scrapers.google_search import GoogleSearcher
 from title_extractor import TitleExtractor
 import time
-
+import re
 class PaperProcessor:
     def __init__(self, max_recursion_depth: int = 0):
         """
@@ -151,8 +151,10 @@ class PaperProcessor:
         if not wiki_url:
             print(f"Could not find Wikipedia page for {keyword}, skipping...")
             return
-            
-        sections = self.wiki_parser.extract_sections(wiki_url)
+        match = re.search(r'wikipedia\.org/wiki/([^#?]+)', wiki_url)
+        if match:
+            match =  match.group(1)
+        sections = self.wiki_parser.extract_sections(match)
         references = self.wiki_parser.extract_references(wiki_url)
         sections = self.wiki_parser.reference_fusion(sections, references)
         print(f"Found {len(sections)} sections")
