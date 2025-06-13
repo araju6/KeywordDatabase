@@ -16,7 +16,7 @@ class WikipediaParser:
         return resp.json()
 
     def extract_sections(self, page_title):
-        """Fetch sections via MediaWiki API and return dict of heading -> plain-text body."""
+        """Fetch sections via MediaWiki API and return dict of heading -> plain-text body with hierarchy."""
         sections = {}
 
         # Fetch the lead (introduction) section
@@ -38,15 +38,37 @@ class WikipediaParser:
         except Exception as e:
             print(f"Failed to fetch intro section: {e}")
 
-        # Get list of other sections
+        # Get list of all sections and build a map from number -> title for hierarchy
         data = self._call_api({
             'action': 'parse',
             'page': page_title,
             'prop': 'sections'
         })
+
+        section_titles_by_number = {}
+        for sec in data['parse'].get('sections', []):
+            sec_number = sec.get('number', '')
+            title = sec.get('line', '')
+            section_titles_by_number[sec_number] = title
+
         for sec in data['parse'].get('sections', []):
             idx = sec['index']
-            title = sec['line']
+            sec_number = sec.get('number', '')
+            title = sec.get('line', '')
+
+            # Build hierarchical title
+            if '.' in sec_number:
+                parts = sec_number.split('.')
+                # Remove the last part (this section)
+                parent_number = '.'.join(parts[:-1])
+                parent_title = section_titles_by_number.get(parent_number, '')
+                if parent_title:
+                    full_title = f"{parent_title} – {title}"
+                else:
+                    full_title = title
+            else:
+                full_title = title
+
             try:
                 sec_data = self._call_api({
                     'action': 'parse',
@@ -61,10 +83,12 @@ class WikipediaParser:
                     for p in soup.find_all('p')
                     if p.get_text(strip=True)
                 ]
-                sections[title] = "\n\n".join(paras)
+                sections[full_title] = "\n\n".join(paras)
             except Exception as e:
                 print(f"Failed to fetch section {title}: {e}")
+
         return sections
+
 
 
     def extract_page_soup(self, full_url):

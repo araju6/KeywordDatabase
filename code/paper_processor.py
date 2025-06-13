@@ -203,7 +203,10 @@ class PaperProcessor:
         non_identified_sources = [a[0] for a in self.title_extractor.extract_titles(non_identified_sources)]
         print(f"Identified sources: {len(identified_sources)}")
         print(f"Non-identified sources: {non_identified_sources} ")
-        
+        print(non_identified_sources)
+        print("AAAAAAAA") 
+        print(identified_sources)
+
         # Extract clean titles from identified sources
         print("\nStep 5: Extracting clean titles from identified sources")
         clean_identified_sources = self.title_extractor.extract_titles(identified_sources)

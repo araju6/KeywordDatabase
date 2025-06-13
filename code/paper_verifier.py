@@ -44,7 +44,7 @@ class Paper_Verifier:
                         "content": prompt,
                     }
                 ],
-                model="gpt-4o",
+                model="gpt-4o-mini",
                 temperature=0,
             )
             
