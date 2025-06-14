@@ -22,7 +22,7 @@ Given the following Wikipedia section titled "{section_title}", do the following
 I want you to be extremely extremely extremely picky with your selection, try to limit to 1 claims per section.
 Return your answer in this format:
 
-- Sentence/Sentences deemed important (extract directly from the content. When possible try to expand claims such that they contain a reference. Don't add any extra text, put extracted text in quotes.) – *Explanation of why it was chosen* - <Paper in the claim (from references if available) - ["Name of the paper if identifiable by reference else name as mentioned in the claim"] :-: <Author(s)> (<Year>)>. If any information is unavailable in the claim use XXX as a placeholder. if there are multiple papers in one claim make them separate entries. Ensure to check the references first.
+- Sentence/Sentences deemed important (extract directly from the content. When possible try to expand claims such that they contain a reference. Don't add any extra text, put extracted text in quotes.) – *Explanation of why it was chosen* - <Paper in the claim (from references if available) - ["<Name of the paper if identifiable by reference else name as mentioned in the claim>"] :-: <Author(s)> (<Year>)>. If any information is unavailable in the claim use XXX as a placeholder. if there are multiple papers in one claim make them separate entries. Ensure to check the references first.
 
 New Keywords:
 - <keyword1>
