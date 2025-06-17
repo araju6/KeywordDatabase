@@ -147,14 +147,11 @@ class PaperProcessor:
         
         # Get Wikipedia content
         print(f"\nStep 1: Fetching Wikipedia content for {keyword}")
-        wiki_url = self.google_searcher.find_wikipedia_page(keyword)
+        wiki_url = self.google_searcher.find_wikipedia_page(keyword) + "?action=render"
         if not wiki_url:
             print(f"Could not find Wikipedia page for {keyword}, skipping...")
             return
-        match = re.search(r'wikipedia\.org/wiki/([^#?]+)', wiki_url)
-        if match:
-            match =  match.group(1)
-        sections = self.wiki_parser.extract_sections(match)
+        sections = self.wiki_parser.extract_sections(wiki_url)
         references = self.wiki_parser.extract_references(wiki_url)
         sections = self.wiki_parser.reference_fusion(sections, references)
         print(f"Found {len(sections)} sections")
