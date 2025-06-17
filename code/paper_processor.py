@@ -99,7 +99,7 @@ class PaperProcessor:
             print(f"Error extracting key term: {e}")
         return None
 
-    def process_keyword(self, keyword: str, current_depth: int = None, parent_keyword: str = None, processed_chain: set = None):
+    def process_keyword(self, keyword: str, current_depth: int = None, parent_keyword: str = None, processed_chain: set = None, parent_claim: str = None):
         """
         Process a keyword by finding and verifying its papers.
         
@@ -109,6 +109,7 @@ class PaperProcessor:
                           If None, uses max_recursion_depth for initial call.
             parent_keyword: The parent keyword that led to this one, if any
             processed_chain: Set of keywords in the current processing chain to prevent cycles
+            parent_claim: The claim from the parent keyword that led to this keyword
         """
         # Set initial depth to max_recursion_depth if not specified
         if current_depth is None:
@@ -137,6 +138,10 @@ class PaperProcessor:
         self.processed_keywords.add(keyword)
         processed_chain.add(keyword)
         self.database.remove_from_remaining(keyword)  # Remove from remaining to process
+        
+        # Add the parent claim to the claim chain if it exists
+        if parent_claim:
+            self.database.add_claim_to_chain(keyword, parent_claim, parent_keyword)
         
         print(f"\n{'='*50}")
         print(f"Processing keyword: {keyword} (depth: {current_depth})")
@@ -236,12 +241,16 @@ class PaperProcessor:
                     # But only if parent is not in the current chain (prevents verification cycles)
                     if parent_keyword and parent_keyword not in processed_chain:
                         print(f"\nVerifying paper for parent keyword: {parent_keyword}")
-                        parent_scores, parent_feedback = self.verifier.verify_papers([paper_info],
+                        # Create a copy of paper_info with parent claim as reasoning
+                        parent_paper_info = paper_info.copy()
+                        if parent_claim:
+                            parent_paper_info['reasoning'] = f"Parent claim: {parent_claim}\nChild claim: {paper_info['reasoning']}"
+                        parent_scores, parent_feedback = self.verifier.verify_papers([parent_paper_info],
                             f"Which foundational research papers were responsible for inventing/discovering {parent_keyword} in Computer Science?")
-                        
+                        print("HEREEEE", parent_paper_info['reasoning'])
                         if parent_scores and parent_scores[0] >= 7:
                             print(f"Paper verified for parent with score {parent_scores[0]}, adding to parent")
-                            self.database.add_paper(parent_keyword, paper_info)
+                            self.database.add_paper(parent_keyword, paper_info, parent_claim)
                         else:
                             print(f"Paper rejected for parent with score {parent_scores[0] if parent_scores else 'N/A'}")
                 else:
@@ -259,7 +268,9 @@ class PaperProcessor:
                 if key_term and key_term not in processed_chain:  # Prevent cycles in key term extraction
                     print(f"Will explore: {key_term}")
                     self.database.add_to_process(key_term)
+                    # Add the claim to the claim chain for the new keyword
+                    self.database.add_claim_to_chain(key_term, claim, keyword)
                     # Process key term with reduced depth, passing this keyword as parent and the current chain
-                    self.process_keyword(key_term, current_depth - 1, keyword, processed_chain.copy())
+                    self.process_keyword(key_term, current_depth - 1, keyword, processed_chain.copy(), claim)
                 else:
                     print(f"Skipping {key_term} - already in current chain") 

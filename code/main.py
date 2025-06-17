@@ -4,7 +4,7 @@ from paper_processor import PaperProcessor
 processor = PaperProcessor(2)
 
 # Start with a root keyword
-root_keyword = "diffusion model"
+root_keyword = "recurrent neural network"
 
 # Process the keyword and all its sub-keywords
 processor.process_keyword(root_keyword)
@@ -34,5 +34,3 @@ remaining = processor.database.get_remaining_keywords()
 #store the chain of keywords in the db, as well as the chain of claims which led to it.
 
 #rewrite the reasoning to flow better some how. Generate a sentence that ties the claim and justification together.
-
-#work on own scraper again for speed.

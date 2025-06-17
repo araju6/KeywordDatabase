@@ -18,7 +18,11 @@ class KeywordDatabase:
         if os.path.exists(self.db_file):
             try:
                 with open(self.db_file, 'r') as f:
-                    return json.load(f)
+                    data = json.load(f)
+                    # Ensure claim_chains exists in existing databases
+                    if "claim_chains" not in data:
+                        data["claim_chains"] = {}
+                    return data
             except json.JSONDecodeError:
                 print(f"Error reading {self.db_file}, creating new database")
                 return self._create_new_database()
@@ -29,7 +33,8 @@ class KeywordDatabase:
         """Create a new empty database structure."""
         return {
             "keywords": {},  # keyword -> list of papers
-            "remaining_to_process": []  # list of keywords to process
+            "remaining_to_process": [],  # list of keywords to process
+            "claim_chains": {}  # keyword -> list of claims in the chain that led to this keyword
         }
     
     def _save_database(self):
@@ -37,13 +42,14 @@ class KeywordDatabase:
         with open(self.db_file, 'w') as f:
             json.dump(self.data, f, indent=2)
     
-    def add_paper(self, keyword: str, paper: Dict) -> None:
+    def add_paper(self, keyword: str, paper: Dict, parent_claim: str = None) -> None:
         """
         Add a paper to a keyword's entry.
         
         Args:
             keyword: The keyword to add the paper to
             paper: The paper information dictionary
+            parent_claim: The claim from the parent keyword that led to this paper, if any
         """
         if keyword not in self.data["keywords"]:
             self.data["keywords"][keyword] = []
@@ -61,7 +67,8 @@ class KeywordDatabase:
                 "url": paper.get("url", ""),
                 "abstract": paper.get("abstract", ""),
                 "citations": paper.get("citations", 0),
-                "reasoning": paper.get("reasoning", "")
+                "reasoning": paper.get("reasoning", ""),
+                "parent_claim": parent_claim  # Add parent claim information
             }
             self.data["keywords"][keyword].append(paper_data)
             print(f"Added paper '{paper_title}' to keyword '{keyword}'")
@@ -117,4 +124,36 @@ class KeywordDatabase:
         """
         if keyword in self.data["remaining_to_process"]:
             self.data["remaining_to_process"].remove(keyword)
-            self._save_database() 
+            self._save_database()
+    
+    def add_claim_to_chain(self, keyword: str, claim: str, parent_keyword: str = None) -> None:
+        """
+        Add a claim to the chain of claims that led to a keyword.
+        
+        Args:
+            keyword: The keyword to add the claim for
+            claim: The claim to add
+            parent_keyword: The parent keyword that led to this claim, if any
+        """
+        if keyword not in self.data["claim_chains"]:
+            self.data["claim_chains"][keyword] = []
+            
+        claim_entry = {
+            "claim": claim,
+            "parent_keyword": parent_keyword
+        }
+        
+        self.data["claim_chains"][keyword].append(claim_entry)
+        self._save_database()
+    
+    def get_claim_chain(self, keyword: str) -> List[Dict]:
+        """
+        Get the chain of claims that led to a keyword.
+        
+        Args:
+            keyword: The keyword to get the claim chain for
+            
+        Returns:
+            List of claim entries with their parent keywords
+        """
+        return self.data["claim_chains"].get(keyword, []) 
