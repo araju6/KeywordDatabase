@@ -239,7 +239,7 @@ class PaperProcessor:
                     
                     # If this is a child keyword, verify the paper for the parent keyword as well
                     # But only if parent is not in the current chain (prevents verification cycles)
-                    if parent_keyword and parent_keyword not in processed_chain:
+                    if parent_keyword:
                         print(f"\nVerifying paper for parent keyword: {parent_keyword}")
                         # Create a copy of paper_info with parent claim as reasoning
                         parent_paper_info = paper_info.copy()

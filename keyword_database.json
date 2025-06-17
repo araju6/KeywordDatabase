@@ -56,6 +56,14 @@
         "citations": 13804,
         "reasoning": "\"The papers most commonly cited as the originators that produced seq2seq are two papers from 2014. [46] [47]\" \u2013 *This sentence refers directly to the foundational papers for seq2seq models.* - [\"Sequence to Sequence Learning with Neural Networks\"] :-: Ilya Sutskever et al. (2014)",
         "parent_claim": null
+      },
+      {
+        "title": "Associatron-A Model of Associative Memory",
+        "url": "https://doi.org/10.1109/tsmc.1972.4309133",
+        "abstract": "Thinking in the human brain greatly depends upon association mechanisms which can be utilized in machine intelligence. An associative memory device, called \" Associatron,\" is proposed. The Associatron stores entities represented by bit patterns in a distributed manner and recalls the whole of any entity from a part of it. If the part is large, the recalled entity will be accurate; on the other hand, if the part is small, the recalled entity will be rather ambiguous. Any number of entities can be stored, but the accuracy of the recalled entity decreases as the number of entities increases. The Associatron is considered to be a simplified model of the neural network and can be constructed as a cellular structure, where each cell is connected to only its neighbor cells and all cells run in parallel. From its mechanisms some properties are derived that are expected to be utilized for human-like information processing. After these properties have been analyzed, an Associatron which deals with entities composed of less than 180 bits is simulated by a computer. Simple examples of its applications for concept formation and game playing are presented and the thinking process by the sequence of associations is described.",
+        "citations": 363,
+        "reasoning": "\"Similar networks were published by Kaoru Nakano in 1971, [ 19 ] [ 20 ] Shun'ichi Amari in 1972, [ 21 ] and William A. Little [ de ] in 1974, [ 22 ] who was acknowledged by Hopfield in his 1982 paper.\" \u2013 *This sentence identifies papers by Nakano, Amari, and Little that contributed to the development of similar recurrent networks.* - [\"Associatron-A Model of Associative Memory\"] :-: Kaoru Nakano (1972)",
+        "parent_claim": null
       }
     ],
     "LSTM": [
@@ -89,6 +97,108 @@
         "abstract": "Previous work on learning regular languages from exemplary training sequences showed that long short-term memory (LSTM) outperforms traditional recurrent neural networks (RNNs). We demonstrate LSTMs superior performance on context-free language benchmarks for RNNs, and show that it works even better than previous hardwired or highly specialized architectures. To the best of our knowledge, LSTM variants are also the first RNNs to learn a simple context-sensitive language, namely a/sup n/b/sup n/c/sup n/.",
         "citations": 718,
         "reasoning": "\"2001: Gers and Schmidhuber trained LSTM to learn languages unlearnable by traditional models such as Hidden Markov Models. [ 21 ]\" \u2013 *This sentence directly mentions the use of LSTM by Gers and Schmidhuber, thus it is considered a foundational work related to LSTMs* - [\"LSTM Recurrent Networks Learn Simple Context Free and Context Sensitive Languages\"] :-: Gers, F. A.; Schmidhuber, J. (2001).",
+        "parent_claim": null
+      }
+    ],
+    "convolutional neural network": [
+      {
+        "title": "Backpropagation Applied to Handwritten Zip Code Recognition",
+        "url": "https://doi.org/10.1162/neco.1989.1.4.541",
+        "abstract": "The ability of learning networks to generalize can be greatly enhanced by providing constraints from the task domain. This paper demonstrates how such constraints can be integrated into a backpropagation network through the architecture of the network. This approach has been successfully applied to the recognition of handwritten zip code digits provided by the U.S. Postal Service. A single network learns the entire recognition operation, going from the normalized image of the character to the final classification.",
+        "citations": 10884,
+        "reasoning": "\"For example, for each neuron in the fully-connected layer, 10,000 weights would be required for processing an image sized 100 \u00d7 100 pixels. However, applying cascaded convolution (or cross-correlation) kernels, only 25 weights for each convolutional layer are required to process 5x5-sized tiles.\" - *This quantifies the computational efficiency gained by using convolution.* - [\"Backpropagation Applied to Handwritten Zip Code Recognition\"] :-: LeCun, Y.; Boser, B.; Denker, J. S.; Henderson, D.; Howard, R. E.; Hubbard, W.; Jackel, L. D. (1989).",
+        "parent_claim": null
+      },
+      {
+        "title": "Neocognitron: A self-organizing neural network model for a mechanism of pattern recognition unaffected by shift in position",
+        "url": "https://doi.org/10.1007/bf00344251",
+        "abstract": "A neural network model for a mechanism of visual pattern recognition is proposed in this paper. The network is self-organized by \u201clearning without a teacher\u201d, and acquires an ability to recognize stimulus patterns based on the geometrical similarity (Gestalt) of their shapes without affected by their positions. This network is given a nickname \u201cneocognitron\u201d. After completion of self-organization, the network has a structure similar to the hierarchy model of the visual nervous system proposed by Hubel and Wiesel. The network consits of an input layer (photoreceptor array) followed by a cascade connection of a number of modular structures, each of which is composed of two layers of cells connected in a cascade. The first layer of each module consists of \u201cS-cells\u201d, which show characteristics similar to simple cells or lower order hypercomplex cells, and the second layer consists of \u201cC-cells\u201d similar to complex cells or higher order hypercomplex cells. The afferent synapses to each S-cell have plasticity and are modifiable. The network has an ability of unsupervised learning: We do not need any \u201cteacher\u201d during the process of self-organization, and it is only needed to present a set of stimulus patterns repeatedly to the input layer of the network. The network has been simulated on a digital computer. After repetitive presentation of a set of stimulus patterns, each stimulus pattern has become to elicit an output only from one of the C-cell of the last layer, and conversely, this C-cell has become selectively responsive only to that stimulus pattern. That is, none of the C-cells of the last layer responds to more than one stimulus pattern. The response of the C-cells of the last layer is not affected by the pattern's position at all. Neither is it affected by a small change in shape nor in size of the stimulus pattern.",
+        "citations": 5226,
+        "reasoning": "\"Convolutional networks were inspired by biological processes in that the connectivity pattern between neurons resembles the organization of the animal visual cortex.\" - *This mentions the biological inspiration of convolutional networks.* - [\"Neocognitron\"] :-: Fukushima, K. (2007).",
+        "parent_claim": null
+      },
+      {
+        "title": "Deep learning",
+        "url": "https://doi.org/10.1038/nature14539",
+        "abstract": "Deep learning allows computational models that are composed of multiple processing layers to learn representations of data with multiple levels of abstraction. These methods have dramatically improved the state-of-the-art in speech recognition, visual object recognition, object detection and many other domains such as drug discovery and genomics. Deep learning discovers intricate structure in large data sets by using the backpropagation algorithm to indicate how a machine should change its internal parameters that are used to compute the representation in each layer from the representation in the previous layer. Deep convolutional nets have brought about breakthroughs in processing images, video, speech and audio, whereas recurrent nets have shone light on sequential data such as text and speech.",
+        "citations": 68803,
+        "reasoning": "\"It is the first CNN utilizing weight sharing in combination with a training by gradient descent, using backpropagation.\" \u2013 *This sentence makes a claim about the the first use of weight sharing with gradient descent in CNNs.* - [\"Deep learning\"] :-: LeCun, Yann; Bengio, Yoshua; Hinton, Geoffrey (2015).",
+        "parent_claim": null
+      },
+      {
+        "title": "Neural Network Recognizer for Hand-Written Zip Code Digits",
+        "url": null,
+        "abstract": "This paper describes the construction of a system that recognizes handprinted digits, using a combination of classical techniques and neural-net methods. The system has been trained and tested on real-world data, derived from zip codes seen on actual U.S. Mail. The system rejects a small percentage of the examples as unclassifiable, and achieves a very low error rate on the remaining examples. The system compares favorably with other state-of-the art recognizers. While some of the methods are specific to this task, it is hoped that many of the techniques will be applicable to a wide range of recognition tasks.",
+        "citations": 147,
+        "reasoning": "\"Denker et al. (1989) designed a 2-D CNN system to recognize hand-written ZIP Code numbers.\" \u2013 *This sentence indicates the use of a 2D CNN for a specific task.* - [\"Neural network recognizer for hand-written zip code digits\"] :-: Denker et al. (1989)",
+        "parent_claim": null
+      },
+      {
+        "title": "Visual Feature Extraction by a Multilayered Network of Analog Threshold Elements",
+        "url": "https://doi.org/10.1109/tssc.1969.300225",
+        "abstract": "A new type of visual feature extracting network has been synthesized, and the response of the network has been simulated on a digital computer. This research has been done as a first step towards the realization of a recognizer of handwritten characters. The design of the network was suggested by biological systems, especially, the visual systems of cat and monkey. The network is composed of analog threshold elements connected in layers. Each analog threshold element receives inputs from a large number of elements in the neighbouring layers and performs its own special functions. It takes care of one restricted part of the photoreceptor layer, on which an input pattem is presented, and it responds to one particular feature of the input pattem, such as brightness contrast, a dot in the pattern, a line segment of a particular orientation, or an end of the line. This means that the network performs parallel processing of the information. With the propagation of the information through the layered network, the input pattern is successively decomposed into dots, groups of line segments of the same orientation, and the ends of these line segments.",
+        "citations": 228,
+        "reasoning": "\"Previously in 1969, he published a similar architecture, but with hand-designed kernels inspired by convolutions in mammalian vision. [4]\" \u2013 *States the publication of an earlier similar architecture, referencing a specific paper.* - [\"Visual Feature Extraction by a Multilayered Network of Analog Threshold Elements\"] :-: Fukushima (1969)",
+        "parent_claim": "neocognitron"
+      },
+      {
+        "title": "Cognitron: A self-organizing multilayered neural network",
+        "url": "https://doi.org/10.1007/bf00342633",
+        "abstract": "A new hypothesis for the organization of synapses between neurons is proposed: \u201cThe synapse from neuron x to neuron y is reinforced when x fires provided that no neuron in the vicinity of y is firing stronger than y \u201d. By introducing this hypothesis, a new algorithm with which a multilayered neural network is effectively organized can be deduced. A self-organizing multilayered neural network, which is named \u201ccognitron\u201d, is constructed following this algorithm, and is simulated on a digital computer. Unlike the organization of a usual brain models such as a three-layered perceptron, the self-organization of a cognitron progresses favorably without having a \u201cteacher\u201d which instructs in all particulars how the individual cells respond. After repetitive presentations of several stimulus patterns, the cognitron is self-organized in such a way that the receptive fields of the cells become relatively larger in a deeper layer. Each cell in the final layer integrates the information from whole parts of the first layer and selectively responds to a specific stimulus pattern or a feature.",
+        "citations": 700,
+        "reasoning": "\"In 1975 he improved it to the Cognitron, [5] [6]\" \u2013 *States the development of the Cognitron, referencing specific papers.* - [\"Cognitron: A self-organizing multilayered neural network\"] :-: Fukushima (1975)",
+        "parent_claim": "neocognitron"
+      }
+    ],
+    "Convolution": [
+      {
+        "title": "Neocognitron: A self-organizing neural network model for a mechanism of pattern recognition unaffected by shift in position",
+        "url": "https://doi.org/10.1007/bf00344251",
+        "abstract": "A neural network model for a mechanism of visual pattern recognition is proposed in this paper. The network is self-organized by \u201clearning without a teacher\u201d, and acquires an ability to recognize stimulus patterns based on the geometrical similarity (Gestalt) of their shapes without affected by their positions. This network is given a nickname \u201cneocognitron\u201d. After completion of self-organization, the network has a structure similar to the hierarchy model of the visual nervous system proposed by Hubel and Wiesel. The network consits of an input layer (photoreceptor array) followed by a cascade connection of a number of modular structures, each of which is composed of two layers of cells connected in a cascade. The first layer of each module consists of \u201cS-cells\u201d, which show characteristics similar to simple cells or lower order hypercomplex cells, and the second layer consists of \u201cC-cells\u201d similar to complex cells or higher order hypercomplex cells. The afferent synapses to each S-cell have plasticity and are modifiable. The network has an ability of unsupervised learning: We do not need any \u201cteacher\u201d during the process of self-organization, and it is only needed to present a set of stimulus patterns repeatedly to the input layer of the network. The network has been simulated on a digital computer. After repetitive presentation of a set of stimulus patterns, each stimulus pattern has become to elicit an output only from one of the C-cell of the last layer, and conversely, this C-cell has become selectively responsive only to that stimulus pattern. That is, none of the C-cells of the last layer responds to more than one stimulus pattern. The response of the C-cells of the last layer is not affected by the pattern's position at all. Neither is it affected by a small change in shape nor in size of the stimulus pattern.",
+        "citations": 5226,
+        "reasoning": "\"Convolutional networks were inspired by biological processes in that the connectivity pattern between neurons resembles the organization of the animal visual cortex.\" - *This mentions the biological inspiration of convolutional networks.* - [\"Neocognitron\"] :-: Fukushima, K. (2007).",
+        "parent_claim": null
+      },
+      {
+        "title": "Deep learning",
+        "url": "https://doi.org/10.1038/nature14539",
+        "abstract": "Deep learning allows computational models that are composed of multiple processing layers to learn representations of data with multiple levels of abstraction. These methods have dramatically improved the state-of-the-art in speech recognition, visual object recognition, object detection and many other domains such as drug discovery and genomics. Deep learning discovers intricate structure in large data sets by using the backpropagation algorithm to indicate how a machine should change its internal parameters that are used to compute the representation in each layer from the representation in the previous layer. Deep convolutional nets have brought about breakthroughs in processing images, video, speech and audio, whereas recurrent nets have shone light on sequential data such as text and speech.",
+        "citations": 68803,
+        "reasoning": "\"It is the first CNN utilizing weight sharing in combination with a training by gradient descent, using backpropagation . [ 44 ]\" \u2013 *This sentence highlights a crucial aspect of early CNNs: the utilization of weight sharing and training via gradient descent with backpropagation, making it a foundational concept.* - [\"Deep learning\"] :-: LeCun, Yann; Bengio, Yoshua; Hinton, Geoffrey (2015).",
+        "parent_claim": null
+      },
+      {
+        "title": "Visual Feature Extraction by a Multilayered Network of Analog Threshold Elements",
+        "url": "https://doi.org/10.1109/tssc.1969.300225",
+        "abstract": "A new type of visual feature extracting network has been synthesized, and the response of the network has been simulated on a digital computer. This research has been done as a first step towards the realization of a recognizer of handwritten characters. The design of the network was suggested by biological systems, especially, the visual systems of cat and monkey. The network is composed of analog threshold elements connected in layers. Each analog threshold element receives inputs from a large number of elements in the neighbouring layers and performs its own special functions. It takes care of one restricted part of the photoreceptor layer, on which an input pattem is presented, and it responds to one particular feature of the input pattem, such as brightness contrast, a dot in the pattern, a line segment of a particular orientation, or an end of the line. This means that the network performs parallel processing of the information. With the propagation of the information through the layered network, the input pattern is successively decomposed into dots, groups of line segments of the same orientation, and the ends of these line segments.",
+        "citations": 228,
+        "reasoning": "\"Previously in 1969, he published a similar architecture, but with hand-designed kernels inspired by convolutions in mammalian vision. [ 4 ]\" \u2013 *States the proposer and year of earlier architecture similar to neocognitron. This is a clear and direct claim related to foundational work.* - [\"Visual Feature Extraction by a Multilayered Network of Analog Threshold Elements\"] :-: Kunihiko Fukushima (1969)",
+        "parent_claim": null
+      }
+    ],
+    "neocognitron": [
+      {
+        "title": "Visual Feature Extraction by a Multilayered Network of Analog Threshold Elements",
+        "url": "https://doi.org/10.1109/tssc.1969.300225",
+        "abstract": "A new type of visual feature extracting network has been synthesized, and the response of the network has been simulated on a digital computer. This research has been done as a first step towards the realization of a recognizer of handwritten characters. The design of the network was suggested by biological systems, especially, the visual systems of cat and monkey. The network is composed of analog threshold elements connected in layers. Each analog threshold element receives inputs from a large number of elements in the neighbouring layers and performs its own special functions. It takes care of one restricted part of the photoreceptor layer, on which an input pattem is presented, and it responds to one particular feature of the input pattem, such as brightness contrast, a dot in the pattern, a line segment of a particular orientation, or an end of the line. This means that the network performs parallel processing of the information. With the propagation of the information through the layered network, the input pattern is successively decomposed into dots, groups of line segments of the same orientation, and the ends of these line segments.",
+        "citations": 228,
+        "reasoning": "\"Previously in 1969, he published a similar architecture, but with hand-designed kernels inspired by convolutions in mammalian vision. [4]\" \u2013 *States the publication of an earlier similar architecture, referencing a specific paper.* - [\"Visual Feature Extraction by a Multilayered Network of Analog Threshold Elements\"] :-: Fukushima (1969)",
+        "parent_claim": null
+      },
+      {
+        "title": "Cognitron: A self-organizing multilayered neural network",
+        "url": "https://doi.org/10.1007/bf00342633",
+        "abstract": "A new hypothesis for the organization of synapses between neurons is proposed: \u201cThe synapse from neuron x to neuron y is reinforced when x fires provided that no neuron in the vicinity of y is firing stronger than y \u201d. By introducing this hypothesis, a new algorithm with which a multilayered neural network is effectively organized can be deduced. A self-organizing multilayered neural network, which is named \u201ccognitron\u201d, is constructed following this algorithm, and is simulated on a digital computer. Unlike the organization of a usual brain models such as a three-layered perceptron, the self-organization of a cognitron progresses favorably without having a \u201cteacher\u201d which instructs in all particulars how the individual cells respond. After repetitive presentations of several stimulus patterns, the cognitron is self-organized in such a way that the receptive fields of the cells become relatively larger in a deeper layer. Each cell in the final layer integrates the information from whole parts of the first layer and selectively responds to a specific stimulus pattern or a feature.",
+        "citations": 700,
+        "reasoning": "\"In 1975 he improved it to the Cognitron, [5] [6]\" \u2013 *States the development of the Cognitron, referencing specific papers.* - [\"Cognitron: A self-organizing multilayered neural network\"] :-: Fukushima (1975)",
+        "parent_claim": null
+      },
+      {
+        "title": "Receptive fields of single neurones in the cat's striate cortex",
+        "url": "https://doi.org/10.1113/jphysiol.1959.sp006308",
+        "abstract": "No abstract found",
+        "citations": 4459,
+        "reasoning": "\"The neocognitron was inspired by the model proposed by Hubel & Wiesel in 1959. [ 7 ] [ 8 ]\" \u2013 *States the proposers and year of the model that Neocognitron was inspired by. This is a clear and direct claim related to foundational work.* - [\"Receptive fields of single neurones in the cat's striate cortex\"] :-: DH Hubel and TN Wiesel (1959)",
         "parent_claim": null
       }
     ]
@@ -213,7 +323,162 @@
     "Convolutional neural networks (CNNs)",
     "Automatic image captioning",
     "History compression",
-    "Description length minimization"
+    "Description length minimization",
+    "Temporal Dependencies",
+    "Epilepsy",
+    "Causalgia",
+    "Motor control",
+    "Macy conferences",
+    "Unsupervised Learning",
+    "Unfolded RNN",
+    "Feedforward Neural Network",
+    "Filter Optimization",
+    "Convolution Kernel",
+    "Vanishing Gradients",
+    "Exploding Gradients",
+    "Shared Weights",
+    "Cascaded Convolution",
+    "Cross-correlation Kernel",
+    "Fully-Connected Layer",
+    "Feature Maps",
+    "Overfitting",
+    "Regularization",
+    "Weight Decay",
+    "Dropout",
+    "Visual Cortex",
+    "Receptive Field",
+    "Vision processing",
+    "Visual Cell Types",
+    "Multilayer visual feature detection network",
+    "ReLU (rectified linear unit)",
+    "Neocognitron",
+    "ReLU activation function",
+    "Lateral inhibition",
+    "Shift invariance",
+    "Correlation",
+    "Signal processing",
+    "Filter",
+    "Time delay neural network (TDNN)",
+    "Phoneme recognition",
+    "Shift-invariance",
+    "1-D convolutional neural net",
+    "Weight sharing",
+    "Gradient descent",
+    "Pyramidal structure",
+    "Spectrograms",
+    "2-D CNN",
+    "1-D CNN",
+    "Hand-written ZIP Code numbers",
+    "Back-propagation",
+    "Convolution kernel",
+    "Hand-written numbers",
+    "Alphabets recognition",
+    "Shift-invariant pattern recognition neural network",
+    "Medical image object segmentation",
+    "Breast cancer detection",
+    "Mammograms",
+    "Max pooling",
+    "Time Delay Neural Networks (TDNNs)",
+    "Cresceptron",
+    "Downsampling",
+    "LeNet-5",
+    "Convolutional Neural Network",
+    "Digitized Images",
+    "Shift-invariant neural network",
+    "Image character recognition",
+    "Convolutional interconnections",
+    "Medical image segmentation",
+    "Automatic detection of breast cancer",
+    "Electromyography",
+    "De-convolution",
+    "Graphics processing units (GPUs)",
+    "GPU-implementation of a CNN",
+    "Cross-correlation",
+    "Deconvolution",
+    "Euclidean space",
+    "Periodic functions",
+    "Discrete-time Fourier transform",
+    "Discrete convolution",
+    "Finite impulse response filters",
+    "Impulse response",
+    "Linear time-invariant system",
+    "Filter (Kernel) Optimization",
+    "Deep Learning",
+    "Cross-Correlation",
+    "Shift Invariance",
+    "Space Invariance",
+    "Translation Equivariance",
+    "Receptive field",
+    "Visual cortex",
+    "Neurons",
+    "Homogeneous connections",
+    "Handwritten ZIP code recognition",
+    "Breast cancer detection in mammograms",
+    "TDNNs",
+    "Speaker-independent isolated word recognition system",
+    "Spatial averaging",
+    "Inhibition",
+    "Saturation",
+    "Downsampling unit",
+    "Convolutional Network",
+    "Hand-written number classification",
+    "Digitized image",
+    "Graphics Processing Unit (GPU)",
+    "Convolutional Neural Network (CNN)",
+    "Deep Belief Networks",
+    "Deep Feedforward Networks",
+    "Image Recognition",
+    "Filter (or Kernel)",
+    "receptive field",
+    "visual cortex",
+    "contralateral visual field",
+    "Convolutional network",
+    "Time-invariantly",
+    "Hand-written ZIP Code recognition",
+    "32x32 pixel images",
+    "Generalization ability",
+    "GPGPU",
+    "Deep belief networks",
+    "Deep feedforward networks",
+    "ImageNet Large Scale Visual Recognition Challenge",
+    "Thread-level parallelism",
+    "SIMD-level parallelism",
+    "Convolutional Neural Networks (CNNs)",
+    "Hierarchical neural network",
+    "Multilayered neural network",
+    "Handwritten character recognition",
+    "Pattern recognition",
+    "Convolutional neural networks",
+    "Hand-designed kernels",
+    "Convolutions (in mammalian vision)",
+    "Self-organizing (learning)",
+    "Simple cell",
+    "Complex cell",
+    "Visual primary cortex",
+    "Cascading model",
+    "S-cells",
+    "C-cells",
+    "Local features",
+    "Feature deformation",
+    "Selective attention",
+    "Feedforward neural network",
+    "Filter optimization",
+    "Shared weights",
+    "Feature maps",
+    "Weight decay",
+    "Deconvolutional networks",
+    "Feature learning",
+    "Interconnecting coefficients",
+    "Homogeneous layer",
+    "Time Delay Neural Network (TDNN)",
+    "Kernel coefficients",
+    "Gradient Descent",
+    "Hierarchical artificial neural network",
+    "Multilayered artificial neural network",
+    "Convolutions in mammalian vision",
+    "Local feature integration",
+    "Fourier transform",
+    "neocognitron"
   ],
   "claim_chains": {
     "LSTM": [
@@ -224,6 +489,50 @@
       {
         "claim": "long short-term memory (LSTM) architecture",
         "parent_keyword": "recurrent neural network"
+      }
+    ],
+    "Convolution": [
+      {
+        "claim": "Convolution-based design",
+        "parent_keyword": "convolutional neural network"
+      },
+      {
+        "claim": "Convolution-based design",
+        "parent_keyword": "convolutional neural network"
+      },
+      {
+        "claim": "Convolution in time paper",
+        "parent_keyword": "neocognitron"
+      },
+      {
+        "claim": "Convolution in time paper",
+        "parent_keyword": "convolutional neural network"
+      },
+      {
+        "claim": "Convolution in time paper",
+        "parent_keyword": "convolutional neural network"
+      }
+    ],
+    "neocognitron": [
+      {
+        "claim": "neocognitron",
+        "parent_keyword": "convolutional neural network"
+      },
+      {
+        "claim": "neocognitron",
+        "parent_keyword": "convolutional neural network"
+      },
+      {
+        "claim": "neocognitron",
+        "parent_keyword": "convolutional neural network"
+      },
+      {
+        "claim": "neocognitron",
+        "parent_keyword": "convolutional neural network"
+      },
+      {
+        "claim": "neocognitron",
+        "parent_keyword": "Convolution"
       }
     ]
   }
