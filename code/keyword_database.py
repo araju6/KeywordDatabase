@@ -68,7 +68,7 @@ class KeywordDatabase:
                 "abstract": paper.get("abstract", ""),
                 "citations": paper.get("citations", 0),
                 "reasoning": paper.get("reasoning", ""),
-                "parent_claim": parent_claim  # Add parent claim information
+                "child_claim": parent_claim  # Add parent claim information
             }
             self.data["keywords"][keyword].append(paper_data)
             print(f"Added paper '{paper_title}' to keyword '{keyword}'")
@@ -126,34 +126,55 @@ class KeywordDatabase:
             self.data["remaining_to_process"].remove(keyword)
             self._save_database()
     
-    def add_claim_to_chain(self, keyword: str, claim: str, parent_keyword: str = None) -> None:
+    def add_claim_to_chain(self, child_keyword: str, claim_text: str, parent_keyword: str) -> None:
         """
-        Add a claim to the chain of claims that led to a keyword.
+        Add a claim to the chain of claims that led from a parent_keyword to a child_keyword.
         
         Args:
-            keyword: The keyword to add the claim for
-            claim: The claim to add
-            parent_keyword: The parent keyword that led to this claim, if any
+            child_keyword: The keyword that was discovered.
+            claim_text: The specific text/claim from the parent's source that led to child_keyword.
+            parent_keyword: The parent keyword that led to this claim.
         """
-        if keyword not in self.data["claim_chains"]:
-            self.data["claim_chains"][keyword] = []
+        if child_keyword not in self.data["claim_chains"]:
+            self.data["claim_chains"][child_keyword] = []
             
         claim_entry = {
-            "claim": claim,
+            "claim": claim_text,
             "parent_keyword": parent_keyword
         }
         
-        self.data["claim_chains"][keyword].append(claim_entry)
-        self._save_database()
+        # Avoid adding duplicate claim entries for the same child-parent link
+        if claim_entry not in self.data["claim_chains"][child_keyword]:
+            self.data["claim_chains"][child_keyword].append(claim_entry)
+            self._save_database()
     
-    def get_claim_chain(self, keyword: str) -> List[Dict]:
+    def get_claim_chain(self, child_keyword: str, parent_keyword: Optional[str] = None) -> Optional[str]:
         """
-        Get the chain of claims that led to a keyword.
+        Retrieves the specific claim text that linked the parent_keyword to the child_keyword.
         
         Args:
-            keyword: The keyword to get the claim chain for
+            child_keyword: The keyword (child) whose claims to look up.
+            parent_keyword: The specific parent keyword to filter by. If provided, returns the claim
+                            that specifically links this parent to the child. If None, it attempts to
+                            find any claim leading to the child (though for your current `PaperProcessor`
+                            use case, `parent_keyword` will always be provided here).
             
         Returns:
-            List of claim entries with their parent keywords
+            The specific claim text from the parent's source that led to the child_keyword,
+            or None if no such claim is found.
         """
-        return self.data["claim_chains"].get(keyword, []) 
+        if child_keyword in self.data["claim_chains"]:
+            # If a specific parent is provided, find the claim from that parent
+            if parent_keyword:
+                for entry in self.data["claim_chains"][child_keyword]:
+                    if entry['parent_keyword'] == parent_keyword:
+                        return entry['claim']
+            # If parent_keyword is None, you might have different behavior,
+            # but for the PaperProcessor's use, parent_keyword is always provided here.
+        return None
+
+    def get_all_linked_keywords(self) -> set:
+        """
+        Returns a set of all child keywords that have claim chains (i.e., are linked from a parent).
+        """
+        return set(self.data["claim_chains"].keys())

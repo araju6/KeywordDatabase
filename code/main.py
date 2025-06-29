@@ -30,7 +30,9 @@ remaining = processor.database.get_remaining_keywords()
 
 
 
-#keep track of s1 claim for verifying the children claims.
+
 #store the chain of keywords in the db, as well as the chain of claims which led to it.
 
 #rewrite the reasoning to flow better some how. Generate a sentence that ties the claim and justification together.
+
+#fix adding parent again, and also non identified claims being duplicated
