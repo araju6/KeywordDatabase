@@ -189,7 +189,7 @@ class PaperProcessor:
                 scores, _ = self.verifier.verify_papers([paper_info],
                     f"Which foundational research papers were responsible for inventing/discovering {normalized_keyword} in Computer Science?")
 
-                if scores and scores[0] >= 7:  
+                if scores and scores[0] >= 6:  
                     print(f"Paper verified with score {scores[0]}, adding to database for {normalized_keyword}")
                     
                     current_child_keyword_for_db = normalized_keyword if parent_keyword else None
@@ -227,7 +227,7 @@ class PaperProcessor:
         parent_scores, _ = self.verifier.verify_papers([parent_paper_info],
             f"Which foundational research papers were responsible for inventing/discovering {parent_keyword} in Computer Science?")
         
-        if parent_scores and parent_scores[0] >= 7:
+        if parent_scores and parent_scores[0] >= 6:
             print(f"Paper verified for parent with score {parent_scores[0]}, adding to parent")
             
             self.database.add_paper(

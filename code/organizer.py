@@ -2,6 +2,13 @@ class PaperOrganizer:
     def __init__(self):
         self.identified_sources = []
         self.non_identified_sources = []
+    
+    def reset(self):
+        """
+        Clears the internal lists for identified and non-identified sources.
+        """
+        self.identified_sources = []
+        self.non_identified_sources = []
 
     def organize_papers(self, paper_list):
         for _, papers in paper_list:

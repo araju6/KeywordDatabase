@@ -16,10 +16,9 @@ class GeminiKeywordPaperExtractor:
 You are aiding in building a database of keywords and the foundational research papers that invented them. 
 Given the following Wikipedia section titled "{section_title}", do the following:
 
-1. Identify any claims in the text relating to the foundational academic papers that are associated with the primary development/invention of {keyword}. Be extremely picky and only select claims if they are direcly providing information on the foundational papers. If a claim is found, simply select the sentence/sentences (word for word). If you don't find any simply use the placeholder XXX.
-2. List any other important technical or conceptual keywords found in the text that are related to the topic and may be worth tracking in a research database. These should be tangible concepts be quite picky with this as well.
+1. Identify any claims in the text relating to the foundational academic papers that are associated with the primary development/invention of {keyword}. Be picky, but extract all claims that provide direct information on foundational papers. If a claim is found, simply select the sentence/sentences (word for word). If you don't find any simply use the placeholder XXX.
+2. List any other important technical or conceptual keywords found in the text that are related to the topic and may be worth tracking in a research database. These should be tangible concepts. Be picky with this as well.
 
-I want you to be extremely extremely extremely picky with your selection, try to limit to 1 claims per section.
 Return your answer in this format:
 
 - Sentence/Sentences deemed important (extract directly from the content. When possible try to expand claims such that they contain a reference. Don't add any extra text, put extracted text in quotes.) – *Explanation of why it was chosen* - <Paper in the claim (from references if available) - ["<Name of the paper if identifiable by reference else name as mentioned in the claim>"] :-: <Author(s)> (<Year>)>. If any information is unavailable in the claim use XXX as a placeholder. if there are multiple papers in one claim make them separate entries. Ensure to check the references first.
@@ -40,4 +39,3 @@ Section Content:
         except Exception as e:
             print(f"Gemini API call failed: {e}")
             return None
-
