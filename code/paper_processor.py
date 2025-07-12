@@ -208,8 +208,8 @@ class PaperProcessor:
         print("\nStep 4: Organizing papers into identified and non-identified sources")
         identified_sources, non_identified_sources_raw = self.organizer.organize_papers(paper_list)
         # Clean non_identified_sources
-        non_identified_sources = [a[0] for a in self.title_extractor.extract_titles(non_identified_sources_raw)]
-        
+        # non_identified_sources = [a[0] for a in self.title_extractor.extract_titles(non_identified_sources_raw)]
+        non_identified_sources = non_identified_sources_raw
         print(f"Identified sources: {len(identified_sources)}")
         # Removed the duplicate print here
         print(f"Non-identified sources: {non_identified_sources}")
