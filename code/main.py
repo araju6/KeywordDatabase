@@ -31,5 +31,4 @@ remaining = processor.database.get_remaining_keywords()
 
 
 
-
 #rewrite the reasoning to flow better some how. Generate a sentence that ties the claim and justification together.

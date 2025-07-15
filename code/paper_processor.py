@@ -6,8 +6,8 @@ from keyword_database import KeywordDatabase
 from scrapers.wiki_parser import WikipediaParser
 from scrapers.google_search import GoogleSearcher
 from title_extractor import TitleExtractor
-
 from keyword_extractor import KeywordTermExtractor
+
 import time
 import re
 
@@ -34,7 +34,16 @@ class PaperProcessor:
         self.wiki_parser = WikipediaParser()
         self.GoogleSearcher = GoogleSearcher()
         
-        # NEW: Instantiate the KeywordTermExtractor
+        self.gemini_extractor = GeminiKeywordPaperExtractor() # This instance is now passed to KeywordDatabase
+        self.openalex = OpenAlexRetriever()
+        self.verifier = Paper_Verifier()
+        
+        # Pass the gemini_extractor to KeywordDatabase
+        self.database = KeywordDatabase(gemini_extractor=self.gemini_extractor)
+        
+        self.wiki_parser = WikipediaParser()
+        self.GoogleSearcher = GoogleSearcher()
+        
         self.keyword_term_extractor = KeywordTermExtractor(self.gemini_extractor)
         
         self.max_recursion_depth = max_recursion_depth
@@ -181,7 +190,7 @@ class PaperProcessor:
             print(f"\nProcessing paper: {clean_title_from_gemini}")
 
             paper_info = self.openalex.search_paper(clean_title_from_gemini)
-
+            paper_info['reasoning'] = gemini_full_claim_text
             if paper_info:
                 print("Found paper info, verifying relevance...")
 
@@ -189,6 +198,7 @@ class PaperProcessor:
                 scores, _ = self.verifier.verify_papers([paper_info],
                     f"Which foundational research papers were responsible for inventing/discovering {normalized_keyword} in Computer Science?")
 
+                print(gemini_full_claim_text)
                 if scores and scores[0] >= 6:  
                     print(f"Paper verified with score {scores[0]}, adding to database for {normalized_keyword}")
                     

@@ -53,3 +53,22 @@ class OpenAlexRetriever:
                 'title': first_result.get('title', 'No Title Found')
             }
         return {"url": None, "abstract": None, "citations": None, "title": None}
+    
+if __name__ == "__main__":
+    print("--- Testing OpenAlexRetriever (Direct Run) ---")
+    retriever = OpenAlexRetriever()
+    
+    # Test case: Search for the specific paper
+    test_title = "Handwritten Digit Recognition with a Back-Propagation Network"
+    paper_info = retriever.search_paper(test_title)
+    
+    if paper_info and paper_info.get('title'):
+        print(f"\nSuccessfully found paper: {paper_info['title']}")
+        print(f"URL: {paper_info.get('url', 'N/A')}")
+        print(f"Citations: {paper_info.get('citations', 'N/A')}")
+        print(f"Abstract (first 200 chars): {paper_info.get('abstract', 'N/A')}...")
+    else:
+        print(f"\nPaper '{test_title}' not found or no valid information returned.")
+    
+    print("--- OpenAlexRetriever Test Complete ---")
+
