@@ -1,0 +1,35 @@
+{
+    "Introduction to Algorithms": {
+        "details": {
+            "level": 1,
+            "start_page": 1,
+            "end_page": 10
+        },
+        "sources": [
+            "Preface"
+        ]
+    },
+    "Merge Sort": {
+        "details": {
+            "level": 3,
+            "start_page": 60,
+            "end_page": 70
+        },
+        "sources": [
+            "Section 2.3.1",
+            "Figure 2.4",
+            "Algorithm 2.2"
+        ]
+    },
+    "Quick Sort": {
+        "details": {
+            "level": 3,
+            "start_page": 71,
+            "end_page": 85
+        },
+        "sources": [
+            "Chapter 7",
+            "Problem 7-2"
+        ]
+    }
+}

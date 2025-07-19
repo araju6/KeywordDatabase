@@ -145,7 +145,7 @@ if __name__ == "__main__":
                 print(f"  Title: {section['title']}")
                 print(f"  Level: {section['level']}")
                 print(f"  Pages: {section['start_page']} - {section['end_page']}")
-                print(f"  Content snippet: {section['text_content'][:200]}...")
+                print(f"  Content snippet: {section['text_content']}...")
                 print("-" * 30)
         print("\n--- Extracting Bibliography ---")
         bibliography_content = ingester.extract_bibliography()
