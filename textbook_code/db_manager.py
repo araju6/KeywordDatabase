@@ -1,8 +1,8 @@
 import json
 import os
+from typing import Dict, List, Any
 
 class JsonDatabaseManager:
-
     def __init__(self, db_file_path: str):
         self.db_file_path = db_file_path
         self.data = self._load_data()
@@ -33,7 +33,7 @@ class JsonDatabaseManager:
         except Exception as e:
             print(f"Error saving data to JSON file: {e}")
 
-    def add_section_entry(self, section_title: str, section_data: dict = None):
+    def add_section_entry(self, section_title: str, section_data: Dict[str, Any] = None):
         if section_title not in self.data:
             self.data[section_title] = {
                 "details": section_data if section_data is not None else {},
@@ -48,25 +48,33 @@ class JsonDatabaseManager:
                 print(f"Section '{section_title}' already exists. No new details provided.")
         self._save_data()
 
-    def add_source_to_section(self, section_title: str, source: str):
+    def add_source_to_section(self, section_title: str, source_data: Dict[str, str]):
         if section_title not in self.data:
             self.add_section_entry(section_title) # Create section if it doesn't exist
 
-        if source not in self.data[section_title]["sources"]:
-            self.data[section_title]["sources"].append(source)
-            print(f"Added source '{source}' to section '{section_title}'")
+        # Check for duplicates based on both source_text and context_sentence
+        is_duplicate = False
+        for existing_source in self.data[section_title]["sources"]:
+            if (existing_source.get("source_text") == source_data.get("source_text") and
+                existing_source.get("context_sentence") == source_data.get("context_sentence")):
+                is_duplicate = True
+                break
+
+        if not is_duplicate:
+            self.data[section_title]["sources"].append(source_data)
+            print(f"Added source '{source_data.get('source_text', 'N/A')}' with context to section '{section_title}'")
             self._save_data()
         else:
-            print(f"Source '{source}' already exists in section '{section_title}'. Skipping.")
+            print(f"Source '{source_data.get('source_text', 'N/A')}' with same context already exists in section '{section_title}'. Skipping.")
 
-    def get_sources_for_section(self, section_title: str) -> list:
+    def get_sources_for_section(self, section_title: str) -> List[Dict[str, str]]:
         if section_title in self.data:
             return self.data[section_title].get("sources", [])
         else:
             print(f"Section '{section_title}' not found in database.")
             return []
 
-    def get_section_data(self, section_title: str) -> dict:
+    def get_section_data(self, section_title: str) -> Dict[str, Any]:
         if section_title in self.data:
             return self.data[section_title]
         else:
@@ -77,6 +85,7 @@ class JsonDatabaseManager:
         return self.data
 
     def delete_section(self, section_title: str):
+
         if section_title in self.data:
             del self.data[section_title]
             self._save_data()
@@ -84,8 +93,14 @@ class JsonDatabaseManager:
         else:
             print(f"Section '{section_title}' not found in database. Nothing to delete.")
 
+# Example Usage
 if __name__ == "__main__":
     db_file = "clrs_sections_db.json"
+    # Clean up previous test file if it exists
+    if os.path.exists(db_file):
+        os.remove(db_file)
+        print(f"Removed existing test database file: {db_file}")
+
     db_manager = JsonDatabaseManager(db_file)
 
     # Add some section entries
@@ -94,22 +109,39 @@ if __name__ == "__main__":
     db_manager.add_section_entry("Merge Sort", {"level": 3, "start_page": 60, "end_page": 70})
     db_manager.add_section_entry("Quick Sort", {"level": 3, "start_page": 71, "end_page": 85})
 
-    # Add sources to sections
-    db_manager.add_source_to_section("Merge Sort", "Section 2.3.1")
-    db_manager.add_source_to_section("Merge Sort", "Figure 2.4")
-    db_manager.add_source_to_section("Merge Sort", "Algorithm 2.2")
-    db_manager.add_source_to_section("Merge Sort", "Section 2.3.1") # This is a duplicate, will be skipped
+    # Add structured sources to sections
+    db_manager.add_source_to_section("Merge Sort", {
+        "source_text": "A. V. Aho, J. E. Hopcroft, and J. D. Ullman. Data Structures and Algorithms. Addison-Wesley, Reading, MA, 1983.",
+        "context_sentence": "For more details, see [2]."
+    })
+    db_manager.add_source_to_section("Merge Sort", {
+        "source_text": "A. V. Aho, J. E. Hopcroft, and J. D. Ullman. The Design and Analysis of Computer Algorithms. Addison-Wesley, Reading, MA, 1974.",
+        "context_sentence": "This section covers basic sorting algorithms. For more details, see [1] and [2]."
+    })
+    db_manager.add_source_to_section("Merge Sort", {
+        "source_text": "A. V. Aho, J. E. Hopcroft, and J. D. Ullman. The Design and Analysis of Computer Algorithms. Addison-Wesley, Reading, MA, 1974.",
+        "context_sentence": "Another sentence mentions [1] again."
+    })
+    db_manager.add_source_to_section("Merge Sort", {
+        "source_text": "A. V. Aho, J. E. Hopcroft, and J. D. Ullman. The Design and Analysis of Computer Algorithms. Addison-Wesley, Reading, MA, 1974.",
+        "context_sentence": "This section covers basic sorting algorithms. For more details, see [1] and [2]." # Duplicate, will be skipped
+    })
 
-    db_manager.add_source_to_section("Quick Sort", "Chapter 7")
-    db_manager.add_source_to_section("Quick Sort", "Problem 7-2")
-
-    db_manager.add_source_to_section("Introduction to Algorithms", "Preface")
+    db_manager.add_source_to_section("Quick Sort", {
+        "source_text": "T. H. Cormen, C. E. Leiserson, R. L. Rivest, and C. Stein. Introduction to Algorithms. 3rd ed. MIT Press, Cambridge, MA, 2009.",
+        "context_sentence": "Refer to [3] for the primary textbook."
+    })
+    db_manager.add_source_to_section("Quick Sort", {
+        "source_text": "D. E. Knuth. The Art of Computer Programming, Vol. 1: Fundamental Algorithms. 3rd ed. Addison-Wesley, Reading, MA, 1997.",
+        "context_sentence": "Also, [4] provides excellent insights."
+    })
 
     # Retrieve and print sources for a section
     print("\n--- Sources for Merge Sort ---")
     merge_sort_sources = db_manager.get_sources_for_section("Merge Sort")
-    for source in merge_sort_sources:
-        print(f"- {source}")
+    for source_entry in merge_sort_sources:
+        print(f"- Source: {source_entry.get('source_text', 'N/A')}")
+        print(f"  Context: {source_entry.get('context_sentence', 'N/A')}")
 
     print("\n--- Sources for Non-existent Section ---")
     non_existent_sources = db_manager.get_sources_for_section("Non-existent Section")
@@ -131,6 +163,6 @@ if __name__ == "__main__":
     print(json.dumps(db_manager.get_all_sections(), indent=2))
 
     # Clean up the test file
-    # if os.path.exists(db_file):
-    #     os.remove(db_file)
-    #     print(f"\nCleaned up test database file: {db_file}")
+    if os.path.exists(db_file):
+        os.remove(db_file)
+        print(f"\nCleaned up test database file: {db_file}")
