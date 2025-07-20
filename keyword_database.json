@@ -728,6 +728,21 @@
     "generative model",
     "vanishing gradient",
     "gated recurrent units",
-    "rnn"
+    "rnn",
+    "in-place algorithm",
+    "treesort",
+    "comparison-based sorting algorithm",
+    "heap",
+    "data structure",
+    "stable sort",
+    "treesort algorithm",
+    "heap data structure",
+    "binary tree",
+    "priority queue",
+    "max-heaps",
+    "min-heaps",
+    "sorting algorithm",
+    "implicit data structure",
+    "array"
   ]
 }

@@ -22,6 +22,44 @@ class WikipediaParser:
             print(f"Unexpected error: {e}")
         return None
     
+    def _extract_refs_from_section(self, soup, section_name):
+        """Helper method to extract references from a specific section"""
+        refs = {}
+        current_ref_number = 1
+        
+        # Try to find the section by id or heading
+        section_heading = soup.find(id=section_name)
+        if not section_heading:
+            for heading in soup.find_all(['h2', 'h3', 'h4']):
+                if heading.get_text().strip().lower() in [section_name.lower(), f'notes and {section_name.lower()}']:
+                    section_heading = heading
+                    break
+        
+        if not section_heading:
+            return refs
+        
+        # Find <ol class="references"> anywhere in document
+        ol_blocks = soup.select('ol.references')
+        if not ol_blocks:
+            # Try alternative containers like reflist
+            reflists = soup.select('div.reflist, div.references')
+            for reflist in reflists:
+                ol_blocks.extend(reflist.select('ol.references'))
+        
+        # Parse all ol.references elements
+        for ol in ol_blocks:
+            for li in ol.find_all('li', recursive=False):
+                backlink_span = li.find('span', class_='mw-cite-backlink')
+                if backlink_span:
+                    backlink_span.decompose()
+
+                text = " ".join(li.stripped_strings)
+                text = re.sub(r'^(\^\s*([a-z]\s+)*)+', '', text).strip()
+                refs[current_ref_number] = text
+                current_ref_number += 1
+        
+        return refs
+    
     def extract_references(self, full_url):
         try:
             print(f"Fetching URL: {full_url}")
@@ -37,45 +75,23 @@ class WikipediaParser:
 
         soup = BeautifulSoup(resp.text, 'lxml')
 
-        # Try to find the references section by id or heading
-        references_heading = soup.find(id='References')
-        if not references_heading:
-            for heading in soup.find_all(['h2', 'h3', 'h4']):
-                if heading.get_text().strip().lower() in ['references', 'notes and references']:
-                    references_heading = heading
-                    break
-
-        # If not found, return empty
-        if not references_heading:
-            print("Could not find References heading.")
-            return []
-
-        refs = {}
-        current_ref_number = 1
-
-        # Find <ol class="references"> anywhere in document
-        ol_blocks = soup.select('ol.references')
-        if not ol_blocks:
-            # Try alternative containers like reflist
-            reflists = soup.select('div.reflist, div.references')
-            for reflist in reflists:
-                ol_blocks.extend(reflist.select('ol.references'))
-
-        # Parse all ol.references elements
-        for ol in ol_blocks:
-            for li in ol.find_all('li', recursive=False):
-                backlink_span = li.find('span', class_='mw-cite-backlink')
-                if backlink_span:
-                    backlink_span.decompose()
-
-                text = " ".join(li.stripped_strings)
-                text = re.sub(r'^(\^\s*([a-z]\s+)*)+', '', text).strip()
-                refs[current_ref_number] = text
-                current_ref_number += 1
-
-        if not refs:
-            print("No references parsed from reference section.")
-        return refs
+        # Extract references from both "References" and "Notes" sections
+        references_refs = self._extract_refs_from_section(soup, 'References')
+        notes_refs = self._extract_refs_from_section(soup, 'Notes')
+        
+        # Check if Notes section has more content than References
+        if len(notes_refs) > len(references_refs) and len(notes_refs) > 0:
+            print(f"Using Notes section as it has {len(notes_refs)} references vs {len(references_refs)} in References")
+            return notes_refs
+        elif len(references_refs) > 0:
+            print(f"Using References section with {len(references_refs)} references")
+            return references_refs
+        elif len(notes_refs) > 0:
+            print(f"No References section found, using Notes section with {len(notes_refs)} references")
+            return notes_refs
+        else:
+            print("Could not find References or Notes heading with content.")
+            return {}
     
     def extract_sections(self, full_url):
         soup = self.extract_page_soup(full_url)
@@ -238,7 +254,7 @@ class WikipediaParser:
 if __name__ == "__main__":
     parser = WikipediaParser()
 
-    url = "https://en.wikipedia.org/wiki/diffusion_model?action=render"
+    url = "https://en.wikipedia.org/wiki/quicksort?action=render"
     references = parser.extract_references(url)
     sections = parser.extract_sections(url)
     fused = parser.reference_fusion(sections, references)

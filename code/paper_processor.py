@@ -119,7 +119,7 @@ class PaperProcessor:
         self.organizer.reset() # Ensure organizer is clean for this run
         identified_sources, non_identified_sources = self.organizer.organize_papers(paper_list)
         
-        print(f"Identified sources: {len(identified_sources)}")
+        print(f"Identified sources: {identified_sources}")
         print(f"Non-identified sources: {non_identified_sources}")
         
         # --- Step 5: Extract clean titles ---
