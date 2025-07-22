@@ -236,7 +236,7 @@ class PaperProcessor:
 
         parent_scores, _ = self.verifier.verify_papers([parent_paper_info],
             f"Which foundational research papers were responsible for inventing/discovering {parent_keyword} in Computer Science?")
-        
+        print(_)
         if parent_scores and parent_scores[0] >= 6:
             print(f"Paper verified for parent with score {parent_scores[0]}, adding to parent")
             

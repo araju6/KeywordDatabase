@@ -4,7 +4,7 @@ from paper_processor import PaperProcessor
 processor = PaperProcessor(2)
 
 # Start with a root keyword
-root_keyword = "Heapsort"
+root_keyword = "Minimum Spanning Trees"
 
 # Process the keyword and all its sub-keywords
 processor.process_keyword(root_keyword)

@@ -40,7 +40,7 @@ class Paper_Verifier:
             
             Assess the paper's relevance based on the available information. If a paper is lacking certain information (like abstract or link), rely on the title, citations, and reasoning provided. 
             
-            Remember that for certain topics, it may be unlikely that a single paper is solely responsible for the invention; score based on its foundational contribution. Be EXTREMELY strict. Only papers that are directly related to the founding of the concept should be scored well.
+            Remember that for certain topics, it may be unlikely that a single paper is solely responsible for the invention; score based on its foundational contribution. Be strict but remember many papers may be key in an ideas development. Only papers that are directly related to the founding of the concept should be scored well.
             
             Return ONLY a single integer score between 0 and 9. Do not include any other text.
             """
