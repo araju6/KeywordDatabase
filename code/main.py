@@ -4,7 +4,7 @@ from paper_processor import PaperProcessor
 processor = PaperProcessor(2)
 
 # Start with a root keyword
-root_keyword = "Minimum Spanning Trees"
+root_keyword = "binary search tree"
 
 # Process the keyword and all its sub-keywords
 processor.process_keyword(root_keyword)
