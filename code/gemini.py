@@ -39,3 +39,41 @@ Section Content:
         except Exception as e:
             print(f"Gemini API call failed: {e}")
             return None
+        
+    
+    def extract_papers_and_keywords_general(self, section_title, all_text, explicit_references, keyword):
+        prompt = f"""
+You are aiding in building a database of keywords and the foundational research papers that **originated or invented them**. 
+Given the following article titled "{section_title}", do the following:
+
+1. Identify only those claims that explicitly discuss the **first or foundational papers** responsible for the creation, invention, or primary development of {keyword}. 
+   - Do NOT include papers that are merely related, derivative, or follow-up work.
+   - If a claim is found, extract the sentence/sentences **word for word**. 
+   - If no truly foundational claim is present, use XXX.
+   - Be EXTREMELY picky; this is the single most important criterion.
+
+2. Inline citations may exist in the form of [1], (Author, Year), or doi: links. Always cross-check and resolve them against the provided references list when possible.
+
+3. The article may contain irrelevant content (navigation menus, copyright statements, site promotions, tags, URLs). **Ignore all of this** and focus only on meaningful content describing the origin of {keyword}.
+
+Return your answer in this format:
+
+- Sentence/Sentences deemed important (extract directly from the content. Include references if possible. Do not add extra text, put text in quotes.) – *Explanation of why it is foundational* - <Paper in the claim (from references if available - ["<Name of the paper if identifiable by reference else name as mentioned in the claim>"]) :-: <Author(s)> (<Year>)>. 
+- If multiple papers appear in one claim, separate them as distinct entries. Always cross-check references first.
+
+Article Content:
+\"\"\"
+{all_text}
+\"\"\"
+
+References:
+\"\"\"
+{explicit_references}
+\"\"\"
+"""
+        try:
+            response = self.model.generate_content(prompt)
+            return response.text.strip()
+        except Exception as e:
+            print(f"Gemini API call failed: {e}")
+            return None

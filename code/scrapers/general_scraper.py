@@ -3,7 +3,6 @@ import requests
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
-
 class WebPageExtractor:
     def __init__(self, url: str):
         self.url = url
@@ -49,40 +48,20 @@ class WebPageExtractor:
         description = desc_tag["content"] if desc_tag else None
         return {"title": title, "description": description, "url": self.url}
 
-    def extract_paragraphs_and_refs(self):
+    def extract_content_and_refs(self):
+        # remove scripts/styles
         for script in self.soup(["script", "style"]):
             script.decompose()
 
-        paragraphs = []
+        # get all visible text as one block
+        all_text = " ".join([p.get_text(" ", strip=True) for p in self.soup.find_all("p") if p.get_text(strip=True)])
+
+        # extract all explicit <a> references
         global_refs = []
-        para_with_citations = []
-
-        citation_pattern = re.compile(r"\[(\d+)\]|\(([^)]+, \d{4})\)|doi:\s*\S+")
-
-        for i, p in enumerate(self.soup.find_all("p")):
-            text = p.get_text(" ", strip=True)
-            refs = []
-
-            # collect explicit <a> refs
-            for a in p.find_all("a", href=True):
-                anchor = a.get_text(" ", strip=True)
-                href = a["href"]
-                ref_entry = {"anchor": anchor, "href": href}
-                refs.append(ref_entry)
-                global_refs.append(ref_entry)
-
-            if text:
-                para_entry = {"id": i + 1, "text": text, "references": refs}
-                paragraphs.append(para_entry)
-
-                # check inline citations
-                citations = citation_pattern.findall(text)
-                if citations:
-                    para_with_citations.append({
-                        "id": i + 1,
-                        "text": text,
-                        "citations": ["".join(c).strip() for c in citations if "".join(c).strip()]
-                    })
+        for a in self.soup.find_all("a", href=True):
+            anchor = a.get_text(" ", strip=True)
+            href = a["href"]
+            global_refs.append({"anchor": anchor, "href": href})
 
         # try to find a dedicated references section
         explicit_refs = []
@@ -95,38 +74,32 @@ class WebPageExtractor:
                         explicit_refs.append(t)
                 break
 
-        return paragraphs, global_refs, para_with_citations, explicit_refs
+        return {
+            "all_text": all_text,
+            "explicit_references": explicit_refs,
+            "global_references": global_refs
+        }
 
     def run(self):
         self.fetch()
         meta = self.extract_metadata()
-        paragraphs, global_refs, para_with_citations, explicit_refs = self.extract_paragraphs_and_refs()
-
+        content_and_refs = self.extract_content_and_refs()
         result = {
             "metadata": meta,
-            "paragraphs": paragraphs,
-            "paragraphs_with_citations": para_with_citations,
-            "explicit_references": explicit_refs,
-            "global_references": global_refs,
+            **content_and_refs
         }
         return result
 
 
 if __name__ == "__main__":
-    url = "https://www.broadinstitute.org/what-broad/areas-focus/project-spotlight/crispr-timeline"
+    url = "https://pmc.ncbi.nlm.nih.gov/articles/PMC9377665/"
     extractor = WebPageExtractor(url)
     data = extractor.run()
 
     print("=== METADATA ===")
     print(data["metadata"])
-
-    print("\n=== FIRST 2 PARAGRAPHS ===")
-    for para in data["paragraphs"][:2]:
-        print(para)
-
-    print("\n=== PARAGRAPHS WITH INLINE CITATIONS (first 2) ===")
-    for para in data["paragraphs_with_citations"][:2]:
-        print(para)
+    print("\n=== ALL TEXT ===")
+    print(data["all_text"][:1000] + "...")  # print first 1000 chars
 
     print("\n=== EXPLICIT REFERENCES (first 5) ===")
     for ref in data["explicit_references"][:5]:
